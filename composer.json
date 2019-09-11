@@ -1,0 +1,57 @@
+{
+  "name": "bridit/bifrost",
+  "description": "The Bifrost add-on to Laravel Framework",
+  "keywords": [
+    "bridit",
+    "laravel",
+    "bifrost"
+  ],
+  "homepage": "https://github.com/bridit/bifrost",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Gustavo Siqueira",
+      "email": "gus@brid-it.com"
+    }
+  ],
+  "require": {
+    "php": "^7.3",
+    "fideloper/proxy": "^4.1",
+    "laravel/framework": "^6.0",
+    "laravel/tinker": "^1.0",
+    "ramsey/uuid": "^3.8",
+    "spatie/laravel-cors": "^1.6",
+    "spatie/laravel-enum": "^1.0@beta",
+    "spatie/laravel-fractal": "^5.6",
+    "spatie/laravel-query-builder": "^2.1",
+    "spatie/laravel-responsecache": "^6.3",
+    "spatie/laravel-schemaless-attributes": "^1.6"
+  },
+  "require-dev": {
+    "filp/whoops": "^2.0",
+    "fzaninotto/faker": "^1.4",
+    "mockery/mockery": "^1.0",
+    "nunomaduro/collision": "^3.0",
+    "phpunit/phpunit": "^8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bifrost\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Bifrost\\Tests\\": "tests/"
+    },
+    "files": []
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  }
+}
