@@ -5,8 +5,9 @@ namespace Bifrost\Tasks;
 use Bifrost\Entities\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Bridit\Laravel\Tasks\QueueableTask;
 
-class UpdateEntity
+class UpdateEntity extends QueueableTask
 {
 
   /**

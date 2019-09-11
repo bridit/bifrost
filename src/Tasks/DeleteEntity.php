@@ -2,7 +2,9 @@
 
 namespace Bifrost\Tasks;
 
-class DeleteEntity
+use Bridit\Laravel\Tasks\QueueableTask;
+
+class DeleteEntity extends QueueableTask
 {
 
   /**

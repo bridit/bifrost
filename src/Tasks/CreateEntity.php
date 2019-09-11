@@ -3,8 +3,9 @@
 namespace Bifrost\Tasks;
 
 use Illuminate\Support\Arr;
+use Bridit\Laravel\Tasks\QueueableTask;
 
-class CreateEntity
+class CreateEntity extends QueueableTask
 {
 
   public static function execute(string $entityClassName, array $attributes)
