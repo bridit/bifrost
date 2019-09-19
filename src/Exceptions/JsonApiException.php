@@ -101,22 +101,6 @@ class JsonApiException extends \Exception
   }
 
   /**
-   * @return int|null
-   */
-  public function getCode(): ?int
-  {
-    return $this->code;
-  }
-
-  /**
-   * @param int|null $code
-   */
-  public function setCode(?int $code): void
-  {
-    $this->code = $code;
-  }
-
-  /**
    * @return string|null
    */
   public function getTitle(): ?string
