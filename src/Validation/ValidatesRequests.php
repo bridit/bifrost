@@ -36,8 +36,8 @@ trait ValidatesRequests
 
   /**
    * @param $method
-   * @param $parameters
-   * @return array
+   * @param array $parameters
+   * @return mixed
    */
   protected function dataValidation($method, array $parameters)
   {
@@ -45,7 +45,10 @@ trait ValidatesRequests
 
     return collect($validation)->map(function ($errors, $rule) {
       foreach ($errors as $error) {
-        return new JsonApiException($error, 'Invalid Attribute: ' . $rule, 422);
+        $e = new JsonApiException($error, 422);
+        $e->setTitle('Invalid Attribute: ' . $rule);
+
+        return $e;
       }
     })->toArray();
   }
