@@ -118,13 +118,26 @@ abstract class EntityRepository implements EntityRepositoryContract
    */
   public function getQueryBuilder(): QueryBuilder
   {
-    return QueryBuilder::for($this->getEntityClassName())
+    $queryBuilder = QueryBuilder::for($this->getEntityClassName())
       ->allowedFields($this->allowedFields)
       ->allowedIncludes($this->allowedIncludes)
       ->allowedAppends($this->allowedAppends)
       ->allowedFilters($this->allowedFilters)
       ->allowedSorts($this->allowedSorts)
       ->defaultSort($this->defaultSort);
+
+    $limit = request()->input('page.limit');
+    $offset = request()->input('page.offset');
+
+    if (!blank($limit)) {
+      $queryBuilder = $queryBuilder->limit((int) $limit);
+    }
+
+    if (!blank($offset)) {
+      $queryBuilder = $queryBuilder->offset((int) $offset);
+    }
+
+    return $queryBuilder;
   }
 
   /**
@@ -132,6 +145,6 @@ abstract class EntityRepository implements EntityRepositoryContract
    */
   public function paginate(?int $perPage): LengthAwarePaginator
   {
-    return $this->getQueryBuilder()->paginate($perPage ?? config('bifrost.orm.pagination.default_per_page', 25));
+    return $this->getQueryBuilder()->paginate($perPage ?? config('bifrost.orm.pagination.default_limit', 25));
   }
 }

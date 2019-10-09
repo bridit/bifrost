@@ -130,7 +130,7 @@ return [
   'orm' => [
     'driver' => 'eloquent',
     'pagination' => [
-      'default_per_page' => 25,
+      'default_limit' => 25,
     ],
   ],
 
