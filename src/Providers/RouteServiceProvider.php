@@ -76,7 +76,7 @@ class RouteServiceProvider extends ServiceProvider
       $versions = data_get($interface, 'versions') ?? [];
       $versions = !blank($versions) && is_array($versions) ? $versions : [''];
       $middleware = data_get($interface, 'middleware') ?? '';
-      $dirname = data_get($interface, 'dirname', ucfirst($middleware));
+      $dirname = ucfirst(str_replace('auth:', '', data_get($interface, 'dirname', $middleware)));
       $filename = data_get($interface, 'filename', 'routes');
 
       $this->mapRoutes($middleware, $prefix, $dirname, $filename, $versions);
