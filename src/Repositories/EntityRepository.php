@@ -3,9 +3,10 @@
 namespace Bifrost\Repositories;
 
 use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-abstract class EntityRepository implements EntityRepositoryContract
+class EntityRepository implements EntityRepositoryContract
 {
 
   protected $entityClassName;
@@ -15,6 +16,34 @@ abstract class EntityRepository implements EntityRepositoryContract
   protected $allowedSorts = [];
   protected $allowedFields = [];
   protected $allowedAppends = [];
+  protected $exactFilters = [];
+  protected $partialFilters = [];
+
+  /**
+   * EntityRepository constructor.
+   */
+  public function __construct()
+  {
+    $this->allowedFilters = !blank($this->allowedFields)
+      ? $this->allowedFilters
+      : $this->getMergedAllowedFilters();
+  }
+
+  /**
+   * @return array
+   */
+  private function getMergedAllowedFilters(): array
+  {
+    $exactFilters = array_map(function ($item) {
+      return AllowedFilter::exact($item);
+    }, $this->exactFilters);
+
+    $partialFilters = array_map(function ($item) {
+      return AllowedFilter::partial($item);
+    }, $this->partialFilters);
+
+    return array_merge($exactFilters, $partialFilters);
+  }
 
   /**
    * @inheritDoc
