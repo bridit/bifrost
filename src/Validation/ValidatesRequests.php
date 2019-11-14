@@ -46,7 +46,9 @@ trait ValidatesRequests
     return collect($validation)->map(function ($errors, $rule) {
       foreach ($errors as $error) {
         $e = new JsonApiException($error, 422);
-        $e->setTitle('Invalid Attribute: ' . $rule);
+        $e->setTitle('Invalid Attribute');
+        $e->setSource(['parameter' => $rule]);
+        $e->setDetail($error);
 
         return $e;
       }

@@ -133,17 +133,17 @@ class JsonApiException extends \Exception
   }
 
   /**
-   * @return ErrorSource|null
+   * @return array|null
    */
-  public function getSource(): ?ErrorSource
+  public function getSource(): ?array
   {
     return $this->source;
   }
 
   /**
-   * @param ErrorSource|null $source
+   * @param array|null $source
    */
-  public function setSource(?ErrorSource $source): void
+  public function setSource(?array $source): void
   {
     $this->source = $source;
   }
