@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "php": "^7.3",
+    "php": "^7.4",
     "bridit/bifrost-database": "^1.0",
     "bridit/laravel-tasks": "^1.0",
     "fideloper/proxy": "^4.1",
