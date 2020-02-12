@@ -16,7 +16,7 @@ class Transformer extends TransformerAbstract
 
   protected function getResult(array $attributes, Model $entity)
   {
-    $fields = array_filter(explode(',', Request::input('fields.customers')));
+    $fields = array_filter(explode(',', Request::input('fields.' . $entity->getTable())));
 
     if (blank($fields)) {
       return $attributes;
