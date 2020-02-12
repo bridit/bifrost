@@ -15,24 +15,15 @@ class EntityRepository implements EntityRepositoryContract
   protected $allowedFilters = [];
   protected $allowedSorts = [];
   protected $allowedFields = [];
+  protected $allowedScopes = [];
   protected $allowedAppends = [];
   protected $exactFilters = [];
   protected $partialFilters = [];
 
   /**
-   * EntityRepository constructor.
-   */
-  public function __construct()
-  {
-    $this->allowedFilters = !blank($this->allowedFields)
-      ? $this->allowedFilters
-      : $this->getMergedAllowedFilters();
-  }
-
-  /**
    * @return array
    */
-  private function getMergedAllowedFilters(): array
+  private function setAllowedFilters(): array
   {
     $exactFilters = array_map(function ($item) {
       return AllowedFilter::exact($item);
@@ -42,7 +33,11 @@ class EntityRepository implements EntityRepositoryContract
       return AllowedFilter::partial($item);
     }, $this->partialFilters);
 
-    return array_merge($exactFilters, $partialFilters);
+    $scopeFilters = array_map(function ($item) {
+      return AllowedFilter::scope($item);
+    }, $this->allowedScopes);
+
+    $this->allowedFilters = array_merge($exactFilters, $partialFilters, $scopeFilters);
   }
 
   /**
