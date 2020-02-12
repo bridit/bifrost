@@ -20,10 +20,15 @@ class EntityRepository implements EntityRepositoryContract
   protected $exactFilters = [];
   protected $partialFilters = [];
 
+  public function __construct()
+  {
+    $this->setAllowedFilters();
+  }
+
   /**
    * @return array
    */
-  private function setAllowedFilters(): array
+  private function setAllowedFilters()
   {
     $exactFilters = array_map(function ($item) {
       return AllowedFilter::exact($item);
