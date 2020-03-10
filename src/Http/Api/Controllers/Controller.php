@@ -2,6 +2,8 @@
 
 namespace Bifrost\Http\Api\Controllers;
 
+use Bifrost\DTO\DataTransferObject;
+use Bifrost\Services\ApplicationService;
 use Illuminate\Http\Request;
 use Bifrost\Validation\Validator;
 use Illuminate\Http\JsonResponse;
@@ -28,7 +30,7 @@ abstract class Controller extends BaseController
   protected $request;
 
   /**
-   * @var DomainService
+   * @var ApplicationService
    */
   protected $service;
 
@@ -42,16 +44,16 @@ abstract class Controller extends BaseController
    * @param DomainService $service
    * @param Validator|null $validator
    */
-  public function __construct(DomainService $service, ?Validator $validator = null)
+  public function __construct(ApplicationService $service, ?Validator $validator = null)
   {
     $this->service = $service;
     $this->validator = $validator;
   }
 
   /**
-   * @return DomainService
+   * @return ApplicationService
    */
-  public function getService(): DomainService
+  public function getService(): ApplicationService
   {
     return $this->service;
   }
@@ -94,9 +96,7 @@ abstract class Controller extends BaseController
    */
   public function index(Request $request)
   {
-    return $request->has('page')
-      ? $this->paginate($this->getService()->paginate($request->input('page.limit')))
-      : $this->response($this->getService()->findWithQueryBuilder());
+    return $this->response($this->service->findAll(), 200);
   }
 
   /**
@@ -105,26 +105,40 @@ abstract class Controller extends BaseController
    */
   public function show($id)
   {
-    return $this->response($this->getService()->find($id));
+    return $this->response($this->service->find($id), 200);
   }
 
   /**
    * @param Request $request
-   * @return JsonResponse
+   * @return mixed
+   * @throws \ReflectionException
    */
   public function store(Request $request)
   {
-    return $this->response($this->getService()->create($request->all()));
+    $dto = DataTransferObject::fromRequest($request);
+
+    $result = $this->service->create($dto);
+
+    return $result != null
+      ? $this->response($result, 201)
+      : $this->response(null, 422);
   }
 
   /**
-   * @param mixed $id
+   * @param $id
    * @param Request $request
-   * @return JsonResponse
+   * @return \Bifrost\Entities\Model|string|null
+   * @throws \ReflectionException
    */
   public function update($id, Request $request)
   {
-    return $this->response($this->getService()->update($id, $request->all()));
+    $dto = DataTransferObject::fromRequest($request);
+
+    $result = $this->service->update($dto);
+
+    return $result != null
+      ? $this->response($result, 200)
+      : $this->response(null, 422);
   }
 
   /**
@@ -140,4 +154,16 @@ abstract class Controller extends BaseController
       : $this->response(null, 422);
   }
 
+  /**
+   * @param Request $request
+   * @return mixed
+   */
+  public function restore(Request $request)
+  {
+    $id = $request->route()->parameter('id') ?? $request->get('id');
+
+    return $this->getService()->restore($id)
+      ? $this->response(null, 204)
+      : $this->response(null, 422);
+  }
 }
