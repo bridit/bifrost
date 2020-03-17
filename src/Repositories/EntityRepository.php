@@ -172,8 +172,8 @@ class EntityRepository implements EntityRepositoryContract
   /**
    * @inheritDoc
    */
-  public function paginate(?int $perPage): LengthAwarePaginator
+  public function paginate(?int $perPage, ?int $pageNumber, ?array $columns): LengthAwarePaginator
   {
-    return $this->getQueryBuilder()->paginate($perPage ?? config('bifrost.orm.pagination.default_limit', 25));
+    return $this->getQueryBuilder()->paginate($perPage ?? config('bifrost.orm.pagination.default_limit', 25), $columns ?? ['*'], 'page', $pageNumber ?? 1);
   }
 }
