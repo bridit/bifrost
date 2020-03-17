@@ -130,12 +130,14 @@ class DomainService
   }
 
   /**
-   * @param int $perPage
+   * @param int|null $perPage
+   * @param int|null $pageNumber
+   * @param array|null $columns
    * @return LengthAwarePaginator
    */
-  public function paginate(?int $perPage): LengthAwarePaginator
+  public function paginate(?int $perPage, ?int $pageNumber, ?array $columns): LengthAwarePaginator
   {
-    return $this->repository->paginate($perPage);
+    return $this->repository->paginate($perPage, $pageNumber, $columns);
   }
 
   /**

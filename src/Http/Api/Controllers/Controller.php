@@ -95,7 +95,7 @@ abstract class Controller extends BaseController
   public function index(Request $request)
   {
     return $request->has('page')
-      ? $this->paginate($this->getService()->paginate($request->input('page.limit')))
+      ? $this->paginate($this->getService()->paginate($request->input('page.size', null), $request->input('page.number', null)))
       : $this->response($this->getService()->findWithQueryBuilder());
   }
 
