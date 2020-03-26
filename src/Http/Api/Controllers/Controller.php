@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests as IlluminateValidatesRequests;
+use League\Fractal\TransformerAbstract;
 
 abstract class Controller extends BaseController
 {
@@ -39,6 +40,8 @@ abstract class Controller extends BaseController
    */
   protected $validator;
 
+  protected TransformerAbstract $transformer;
+
   /**
    * Controller constructor.
    * @param DomainService $service
@@ -56,6 +59,14 @@ abstract class Controller extends BaseController
   public function getService(): ApplicationService
   {
     return $this->service;
+  }
+
+    /**
+     * @return TransformerAbstract
+     */
+  public function getTransformer(): TransformerAbstract
+  {
+      return $this->transformer;
   }
 
   /**
