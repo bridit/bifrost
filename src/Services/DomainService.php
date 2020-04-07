@@ -13,7 +13,7 @@ abstract class DomainService
 {
 
   /**
-   * Create a new register in the database
+   * Create a new registry in the database
    *
    * @param Model $model
    * @return Model
@@ -30,7 +30,7 @@ abstract class DomainService
   }
 
   /**
-   * Update a register in the database
+   * Update a registry in the database
    *
    * @param Model $model
    * @return Model
@@ -45,7 +45,7 @@ abstract class DomainService
   }
 
   /**
-   * Remove a register from the database
+   * Remove a registry from the database
    *
    * @param Model $model
    */
@@ -57,7 +57,7 @@ abstract class DomainService
   }
 
   /**
-   * Restore a register from the database
+   * Restore a registry from the database
    *
    * @param Model $model
    */
