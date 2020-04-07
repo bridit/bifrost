@@ -2,6 +2,8 @@
 
 namespace Bifrost\Http\Api\Controllers;
 
+use Bifrost\DTO\DataTransferObject;
+use Bifrost\Services\ApplicationService;
 use Illuminate\Http\Request;
 use Bifrost\Validation\Validator;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +14,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests as IlluminateValidatesRequests;
+use League\Fractal\TransformerAbstract;
 
 abstract class Controller extends BaseController
 {
@@ -28,7 +31,7 @@ abstract class Controller extends BaseController
   protected $request;
 
   /**
-   * @var DomainService
+   * @var ApplicationService
    */
   protected $service;
 
@@ -37,23 +40,33 @@ abstract class Controller extends BaseController
    */
   protected $validator;
 
+  protected TransformerAbstract $transformer;
+
   /**
    * Controller constructor.
    * @param DomainService $service
    * @param Validator|null $validator
    */
-  public function __construct(DomainService $service, ?Validator $validator = null)
+  public function __construct(ApplicationService $service, ?Validator $validator = null)
   {
     $this->service = $service;
     $this->validator = $validator;
   }
 
   /**
-   * @return DomainService
+   * @return ApplicationService
    */
-  public function getService(): DomainService
+  public function getService(): ApplicationService
   {
     return $this->service;
+  }
+
+    /**
+     * @return TransformerAbstract
+     */
+  public function getTransformer(): TransformerAbstract
+  {
+      return $this->transformer;
   }
 
   /**
@@ -95,12 +108,12 @@ abstract class Controller extends BaseController
   public function index(Request $request)
   {
     return $request->has('page')
-      ? $this->paginate($this->getService()->paginate(
+      ? $this->paginate($this->service->paginate(
         $request->input('page.size', $request->input('page.limit', null)),
         $request->input('page.number', $request->input('page.offset', null)),
         ['*']
       ))
-      : $this->response($this->getService()->findWithQueryBuilder());
+      : $this->response($this->service->findWithQueryBuilder());
   }
 
   /**
@@ -109,26 +122,40 @@ abstract class Controller extends BaseController
    */
   public function show($id)
   {
-    return $this->response($this->getService()->find($id));
+    return $this->response($this->service->find($id), 200);
   }
 
   /**
    * @param Request $request
-   * @return JsonResponse
+   * @return mixed
+   * @throws \ReflectionException
    */
   public function store(Request $request)
   {
-    return $this->response($this->getService()->create($request->all()));
+    $dto = DataTransferObject::fromRequest($request);
+
+    $result = $this->service->create($dto);
+
+    return $result != null
+      ? $this->response($result, 201)
+      : $this->response(null, 422);
   }
 
   /**
-   * @param mixed $id
+   * @param $id
    * @param Request $request
-   * @return JsonResponse
+   * @return \Bifrost\Entities\Model|string|null
+   * @throws \ReflectionException
    */
   public function update($id, Request $request)
   {
-    return $this->response($this->getService()->update($id, $request->all()));
+    $dto = DataTransferObject::fromRequest($request);
+
+    $result = $this->service->update($dto);
+
+    return $result != null
+      ? $this->response($result, 200)
+      : $this->response(null, 422);
   }
 
   /**
@@ -144,4 +171,16 @@ abstract class Controller extends BaseController
       : $this->response(null, 422);
   }
 
+  /**
+   * @param Request $request
+   * @return mixed
+   */
+  public function restore(Request $request)
+  {
+    $id = $request->route()->parameter('id') ?? $request->get('id');
+
+    return $this->getService()->restore($id)
+      ? $this->response(null, 204)
+      : $this->response(null, 422);
+  }
 }

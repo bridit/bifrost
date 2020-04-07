@@ -18,9 +18,7 @@ trait JsonApiAware
    */
   public function response($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
-    $transformer = app($this->getService()->getTransformerClassName());
-
-    return fractal($data, $transformer)
+    return fractal($data, $this->getTransformer())
       ->serializeWith(new JsonApiSerializer())
       ->withResourceName(class_basename($this->getService()->getEntityClassName()))
       ->respond($defaultHttpCode, $this->getHeaders($headers));
@@ -34,8 +32,7 @@ trait JsonApiAware
    */
   public function paginate(LengthAwarePaginator $data, ?int $defaultHttpCode = 200, array $headers = [])
   {
-    $transformer = app($this->getService()->getTransformerClassName());
-    return fractal($data, $transformer)
+    return fractal($data, $this->getTransformer())
       ->serializeWith(new JsonApiSerializer())
       ->withResourceName(class_basename($this->getService()->getEntityClassName()))
       ->paginateWith(new IlluminatePaginatorAdapter($data))

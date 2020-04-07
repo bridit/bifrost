@@ -2,6 +2,7 @@
 
 namespace Bifrost\Http\Web\Controllers;
 
+use Bifrost\Services\ApplicationService;
 use Illuminate\Http\Request;
 use Bifrost\Validation\Validator;
 use Illuminate\Http\JsonResponse;
@@ -40,7 +41,7 @@ abstract class Controller extends BaseController
    * @param DomainService $service
    * @param Validator|null $validator
    */
-  public function __construct(DomainService $service, ?Validator $validator = null)
+  public function __construct(ApplicationService $service, ?Validator $validator = null)
   {
     $this->service = $service;
     $this->validator = $validator;

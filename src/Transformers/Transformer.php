@@ -2,17 +2,22 @@
 
 namespace Bifrost\Transformers;
 
-use Illuminate\Database\Eloquent\Model;
+use Bifrost\DTO\DataTransferObject;
+use Bifrost\Entities\Model;
 use Illuminate\Support\Facades\Request;
-use League\Fractal\TransformerAbstract;
 
-class Transformer extends TransformerAbstract
+abstract class Transformer
 {
-
   /**
    * @var string
    */
   private static string $entityName;
+
+  public abstract function transform($object): string;
+
+  public abstract function toModel(DataTransferObject $dto): Model;
+
+  public abstract function prepareForUpdate(Model &$model, DataTransferObject $dto);
 
   protected function getResult(array $attributes, Model $entity)
   {

@@ -3,11 +3,19 @@
 namespace Bifrost\Entities;
 
 use Bifrost\Repositories\EntityRepositoryContract;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 
+/**
+ * Class Model
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property bool $active
+ * @package Bifrost\Entities
+ */
 class Model extends BaseModel
 {
 
