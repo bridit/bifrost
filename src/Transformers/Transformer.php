@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\Request;
 
 abstract class Transformer
 {
-  /**
-   * @var string
-   */
-  private static string $entityName;
-
-  public abstract function transform($object): string;
-
   public abstract function toModel(DataTransferObject $dto): Model;
 
   public abstract function prepareForUpdate(Model &$model, DataTransferObject $dto);
