@@ -2,8 +2,8 @@
 
 namespace Bifrost\Services;
 
-use Bifrost\Entities\Model;
 use Carbon\Carbon;
+use Bifrost\Entities\Model;
 
 /**
  * Class DomainService

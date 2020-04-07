@@ -2,46 +2,148 @@
 
 namespace Bifrost\Services;
 
-use Bifrost\DTO\DataTransferObject;
 use Bifrost\Entities\Model;
+use Illuminate\Support\Collection;
+use Bifrost\DTO\DataTransferObject;
 use Bifrost\Transformers\Transformer;
+use Bifrost\Repositories\EntityRepositoryContract;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 abstract class ApplicationService
 {
+
+  /**
+   * @var DomainService|null
+   */
   private ?DomainService $service;
 
+  /**
+   * @var Transformer|null
+   */
   private ?Transformer $transformer;
 
   /**
+   * @var EntityRepositoryContract|null
+   */
+  private EntityRepositoryContract $repository;
+
+  /**
    * ApplicationService constructor.
-   * @param Transformer|null $transformer
+   *
    * @param DomainService|null $service
+   * @param Transformer|null $transformer
+   * @param null|EntityRepositoryContract $repository
    */
-  public function __construct(?Transformer $transformer = null, ?DomainService $service = null)
+  public function __construct(?DomainService $service = null, ?Transformer $transformer = null, ?EntityRepositoryContract $repository = null)
   {
-    $this->transformer = $transformer;
     $this->service = $service;
+    $this->repository = $repository;
+    $this->transformer = $transformer;
   }
 
-  public abstract function getEntityClassName();
+  /**
+   * @return string
+   */
+  public function getEntityClassName()
+  {
+    return $this->repository->getEntityClassName();
+  }
 
   /**
-   * @param string $id
-   * @return Model
+   * Finds an object by its primary key / identifier.
+   *
+   * @param mixed $id The identifier.
+   *
+   * @return \Illuminate\Database\Eloquent\Model|Collection|null The object.
    */
-  public function find(string $id): string
+  public function find($id)
   {
-    $result = $this->getEntityClassName()::find($id);
+    $result = $this->repository->find($id);
+
     return $this->transformer->transform($result);
   }
 
   /**
-   * @return Model
+   * Finds all objects in the repository.
+   *
+   * @return Collection The objects.
    */
-  public function findAll(): string
+  public function findAll()
   {
-    $result = $this->getEntityClassName()::all();
+    $result = $this->repository->findAll();
+
     return $this->transformer->transform($result);
+  }
+
+  /**
+   * Finds objects by a set of criteria.
+   *
+   * Optionally sorting and limiting details can be passed. An implementation may throw
+   * an UnexpectedValueException if certain values of the sorting or limiting details are
+   * not supported.
+   *
+   * @param mixed[] $criteria
+   * @param string[]|null $orderBy
+   * @param int|null $limit
+   * @param int|null $offset
+   *
+   * @return Collection The objects.
+   */
+  public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
+  {
+    return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
+  }
+
+  /**
+   * Finds a single entity by a set of criteria.
+   *
+   * @param array $criteria
+   * @param array|null $orderBy
+   *
+   * @return Model|null The entity instance or NULL if the entity can not be found.
+   */
+  public function findOneBy(array $criteria, ?array $orderBy = null)
+  {
+    return $this->repository->findOneBy($criteria, $orderBy);
+  }
+
+  /**
+   * Counts entities by a set of criteria.
+   *
+   * @param null|array $criteria
+   *
+   * @return int The cardinality of the objects that match the given criteria.
+   */
+  public function count(?array $criteria = [])
+  {
+    return $this->repository->count($criteria);
+  }
+
+  /**
+   * @return Collection
+   */
+  public function findWithQueryBuilder()
+  {
+    return $this->repository->findWithQueryBuilder();
+  }
+
+  /**
+   * @return Model|null
+   */
+  public function findOneWithQueryBuilder()
+  {
+    return $this->repository->findOneWithQueryBuilder();
+  }
+
+  /**
+   * @param int|null $perPage
+   * @param int|null $pageNumber
+   * @param array|null $columns
+   * @return LengthAwarePaginator
+   */
+  public function paginate(?int $perPage, ?int $pageNumber, ?array $columns): LengthAwarePaginator
+  {
+    return $this->repository->paginate($perPage, $pageNumber, $columns);
   }
 
   /**
@@ -52,7 +154,7 @@ abstract class ApplicationService
   {
     $model = $this->find(optional($dto)->id);
 
-    if($model == null){
+    if ($model === null) {
       $this->create($dto);
     }
 
@@ -80,7 +182,7 @@ abstract class ApplicationService
   {
     $model = $this->find(optional($dto)->id);
 
-    if($model == null){
+    if ($model === null) {
       return null;
     }
 
@@ -95,7 +197,7 @@ abstract class ApplicationService
   {
     $model = $this->find($id);
 
-    if($model == null){
+    if ($model === null) {
       return false;
     }
 
@@ -112,7 +214,7 @@ abstract class ApplicationService
   {
     $model = $this->find($id);
 
-    if($model == null){
+    if ($model === null) {
       return false;
     }
 

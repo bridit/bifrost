@@ -2,11 +2,11 @@
 
 namespace Bifrost\Entities;
 
-use Bifrost\Repositories\EntityRepositoryContract;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\App;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Builder;
+use Bifrost\Repositories\EntityRepositoryContract;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 
 /**

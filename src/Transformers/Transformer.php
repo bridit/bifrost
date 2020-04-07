@@ -2,8 +2,8 @@
 
 namespace Bifrost\Transformers;
 
-use Bifrost\DTO\DataTransferObject;
 use Bifrost\Entities\Model;
+use Bifrost\DTO\DataTransferObject;
 use Illuminate\Support\Facades\Request;
 
 abstract class Transformer

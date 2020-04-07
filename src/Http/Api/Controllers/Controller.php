@@ -2,19 +2,18 @@
 
 namespace Bifrost\Http\Api\Controllers;
 
-use Bifrost\DTO\DataTransferObject;
-use Bifrost\Services\ApplicationService;
 use Illuminate\Http\Request;
-use Bifrost\Validation\Validator;
 use Illuminate\Http\JsonResponse;
-use Bifrost\Services\DomainService;
+use Bifrost\Validation\Validator;
+use Bifrost\DTO\DataTransferObject;
+use League\Fractal\TransformerAbstract;
+use Bifrost\Services\ApplicationService;
 use Bifrost\Validation\ValidatesRequests;
 use Bifrost\Http\Api\JsonApi\JsonApiAware;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests as IlluminateValidatesRequests;
-use League\Fractal\TransformerAbstract;
 
 abstract class Controller extends BaseController
 {
@@ -28,23 +27,26 @@ abstract class Controller extends BaseController
   /**
    * @var Request
    */
-  protected $request;
+  protected Request $request;
 
   /**
    * @var ApplicationService
    */
-  protected $service;
+  protected ApplicationService $service;
 
   /**
    * @var Validator
    */
-  protected $validator;
+  protected Validator $validator;
 
+  /**
+   * @var TransformerAbstract
+   */
   protected TransformerAbstract $transformer;
 
   /**
    * Controller constructor.
-   * @param DomainService $service
+   * @param ApplicationService $service
    * @param Validator|null $validator
    */
   public function __construct(ApplicationService $service, ?Validator $validator = null)
@@ -136,7 +138,7 @@ abstract class Controller extends BaseController
 
     $result = $this->service->create($dto);
 
-    return $result != null
+    return $result !== null
       ? $this->response($result, 201)
       : $this->response(null, 422);
   }
@@ -153,7 +155,7 @@ abstract class Controller extends BaseController
 
     $result = $this->service->update($dto);
 
-    return $result != null
+    return $result !== null
       ? $this->response($result, 200)
       : $this->response(null, 422);
   }
@@ -166,7 +168,7 @@ abstract class Controller extends BaseController
   {
     $id = $request->route()->parameter('id') ?? $request->get('id');
 
-    return $this->getService()->delete($id)
+    return $this->service->delete($id)
       ? $this->response(null, 204)
       : $this->response(null, 422);
   }
@@ -179,7 +181,7 @@ abstract class Controller extends BaseController
   {
     $id = $request->route()->parameter('id') ?? $request->get('id');
 
-    return $this->getService()->restore($id)
+    return $this->service->restore($id)
       ? $this->response(null, 204)
       : $this->response(null, 422);
   }

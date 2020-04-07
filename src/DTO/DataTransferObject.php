@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 class DataTransferObject
 {
 
+  /**
+   * @var array|null
+   */
   public ?array $requestData;
 
   /**
