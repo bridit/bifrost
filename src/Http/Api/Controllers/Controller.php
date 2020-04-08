@@ -103,5 +103,22 @@ abstract class Controller extends BaseController
     return call_user_func_array([$this, $method], $parameters);
   }
 
+  /**
+   * @param $request
+   * @return JsonResponse
+   */
+  protected function doIndex($request)
+  {
+    if (!$request->has('page')) {
+      return $this->response($this->service->findWithQueryBuilder());
+    }
 
+    $paginated = $this->service->paginate(
+      $request->input('page.size', $request->input('page.limit', null)),
+      $request->input('page.number', $request->input('page.offset', null)),
+      ['*']
+    );
+
+    return $this->paginate($paginated);
+  }
 }

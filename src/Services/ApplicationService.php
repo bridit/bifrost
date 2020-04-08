@@ -56,7 +56,6 @@ abstract class ApplicationService
    *
    * @return \Illuminate\Database\Eloquent\Model|Collection|null The object.
    */
-
   public function find($id)
   {
     $result = $this->repository->find($id);
@@ -147,11 +146,10 @@ abstract class ApplicationService
     return $this->repository->paginate($perPage, $pageNumber, $columns);
   }
 
-
-    /**
-     * @param DataTransferObject $dto
-     * @return Model|null
-     */
+  /**
+   * @param DataTransferObject $dto
+   * @return Model|null
+   */
   public function createOrUpdate(DataTransferObject $dto): ?Model
   {
     $model = $this->find(optional($dto)->id);
@@ -163,10 +161,10 @@ abstract class ApplicationService
     return $this->updateModel($model, $dto);
   }
 
-    /**
-     * @param DataTransferObject $dto
-     * @return Model|null
-     */
+  /**
+   * @param DataTransferObject $dto
+   * @return Model|null
+   */
   public function create(DataTransferObject $dto): ?Model
   {
     $model = $this->transformer->toModel($dto);
@@ -174,10 +172,10 @@ abstract class ApplicationService
     return $this->service->create($model);
   }
 
-    /**
-     * @param DataTransferObject $dto
-     * @return Model|null
-     */
+  /**
+   * @param DataTransferObject $dto
+   * @return Model|null
+   */
   public function update(DataTransferObject $dto): ?Model
   {
     $model = $this->find(optional($dto)->id);
@@ -189,10 +187,10 @@ abstract class ApplicationService
     return $this->updateModel($model, $dto);
   }
 
-    /**
-     * @param string $id
-     * @return bool
-     */
+  /**
+   * @param string $id
+   * @return bool
+   */
   public function delete(string $id): bool
   {
     $model = $this->find($id);
@@ -223,11 +221,11 @@ abstract class ApplicationService
     return true;
   }
 
-    /**
-     * @param Model $model
-     * @param DataTransferObject $dto
-     * @return Model
-     */
+  /**
+   * @param Model $model
+   * @param DataTransferObject $dto
+   * @return Model
+   */
   protected function updateModel(Model $model, DataTransferObject $dto): Model
   {
     $this->transformer->prepareForUpdate($model, $dto);
