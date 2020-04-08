@@ -49,10 +49,11 @@ abstract class Controller extends BaseController
    * @param ApplicationService $service
    * @param Validator|null $validator
    */
-  public function __construct(ApplicationService $service, ?Validator $validator = null)
+  public function __construct(ApplicationService $service, TransformerAbstract $transformer, ?Validator $validator = null)
   {
     $this->service = $service;
     $this->validator = $validator;
+    $this->transformer = $transformer;
   }
 
   /**
