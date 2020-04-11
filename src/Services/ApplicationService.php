@@ -58,9 +58,7 @@ abstract class ApplicationService
    */
   public function find($id)
   {
-    $result = $this->repository->find($id);
-
-    return $this->transformer->transform($result);
+    return $this->repository->find($id);
   }
 
   /**
@@ -70,9 +68,7 @@ abstract class ApplicationService
    */
   public function findAll()
   {
-    $result = $this->repository->findAll();
-
-    return $this->transformer->transform($result);
+    return $this->repository->findAll();
   }
 
   /**
