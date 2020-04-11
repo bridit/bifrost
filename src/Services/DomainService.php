@@ -5,6 +5,7 @@ namespace Bifrost\Services;
 use Exception;
 use Carbon\Carbon;
 use Bifrost\Entities\Model;
+use Bifrost\Entities\ModelContract;
 
 /**
  * Class DomainService
@@ -16,10 +17,10 @@ abstract class DomainService
   /**
    * Create a new registry in the database.
    *
-   * @param Model $model
+   * @param ModelContract $model
    * @return Model
    */
-  public function create(Model $model): Model
+  public function create(ModelContract $model): Model
   {
     $model->created_at ??= Carbon::now()->setTimezone('UTC');
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
@@ -33,10 +34,10 @@ abstract class DomainService
   /**
    * Update a registry in the database.
    *
-   * @param Model $model
+   * @param ModelContract $model
    * @return Model
    */
-  public function update(Model $model): Model
+  public function update(ModelContract $model): Model
   {
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
 
@@ -48,10 +49,10 @@ abstract class DomainService
   /**
    * Set a registry as inactive.
    *
-   * @param Model $model
+   * @param ModelContract $model
    * @return void
    */
-  public function delete(Model $model)
+  public function delete(ModelContract $model)
   {
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
     $model->active ??= false;
@@ -62,10 +63,10 @@ abstract class DomainService
   /**
    * Restore an inactive registry.
    *
-   * @param Model $model
+   * @param ModelContract $model
    * @return void
    */
-  public function restore(Model $model)
+  public function restore(ModelContract $model)
   {
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
     $model->active ??= true;
@@ -76,11 +77,11 @@ abstract class DomainService
   /**
    * Remove a registry from the database.
    *
-   * @param Model $model
+   * @param ModelContract $model
    * @return void
    * @throws Exception
    */
-  public function forceDelete(Model $model)
+  public function forceDelete(ModelContract $model)
   {
     $model->delete();
   }
