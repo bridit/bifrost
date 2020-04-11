@@ -2,6 +2,7 @@
 
 namespace Bifrost\Services;
 
+use Exception;
 use Carbon\Carbon;
 use Bifrost\Entities\Model;
 
@@ -13,7 +14,7 @@ abstract class DomainService
 {
 
   /**
-   * Create a new registry in the database
+   * Create a new registry in the database.
    *
    * @param Model $model
    * @return Model
@@ -30,7 +31,7 @@ abstract class DomainService
   }
 
   /**
-   * Update a registry in the database
+   * Update a registry in the database.
    *
    * @param Model $model
    * @return Model
@@ -45,26 +46,39 @@ abstract class DomainService
   }
 
   /**
-   * Remove a registry from the database
+   * Set a registry as inactive.
    *
    * @param Model $model
    */
   public function delete(Model $model)
   {
     $model->active = false;
+    $model->updated_at = Carbon::now()->setTimezone('UTC');
 
     $model->save();
   }
 
   /**
-   * Restore a registry from the database
+   * Restore an inactive registry.
    *
    * @param Model $model
    */
   public function restore(Model $model)
   {
     $model->active = true;
+    $model->updated_at = Carbon::now()->setTimezone('UTC');
 
     $model->save();
+  }
+
+  /**
+   * Remove a registry from the database.
+   *
+   * @param Model $model
+   * @throws Exception
+   */
+  public function forceDelete(Model $model)
+  {
+    $model->delete();
   }
 }
