@@ -2,9 +2,10 @@
 
 namespace Bifrost\Services;
 
+use Exception;
 use Bifrost\Entities\Model;
-use Illuminate\Support\Collection;
 use Bifrost\DTO\DataTransferObject;
+use Illuminate\Database\Eloquent\Collection;
 use Bifrost\Transformers\ApplicationTransformer;
 use Bifrost\Repositories\EntityRepositoryContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -54,7 +55,7 @@ abstract class ApplicationService
    *
    * @param mixed $id The identifier.
    *
-   * @return \Illuminate\Database\Eloquent\Model|Collection|null The object.
+   * @return Model|Collection|null The object.
    */
   public function find($id)
   {
@@ -126,7 +127,7 @@ abstract class ApplicationService
   /**
    * @return Model|null
    */
-  public function findOneWithQueryBuilder()
+  public function findOneWithQueryBuilder(): ?Model
   {
     return $this->repository->findOneWithQueryBuilder();
   }
@@ -144,14 +145,14 @@ abstract class ApplicationService
 
   /**
    * @param DataTransferObject $dto
-   * @return Model|null
+   * @return Model
    */
-  public function createOrUpdate(DataTransferObject $dto): ?Model
+  public function createOrUpdate(DataTransferObject $dto): Model
   {
     $model = $this->find(optional($dto)->id);
 
     if ($model === null) {
-      $this->create($dto);
+      return $this->create($dto);
     }
 
     return $this->updateModel($model, $dto);
@@ -159,9 +160,9 @@ abstract class ApplicationService
 
   /**
    * @param DataTransferObject $dto
-   * @return Model|null
+   * @return Model
    */
-  public function create(DataTransferObject $dto): ?Model
+  public function create(DataTransferObject $dto): Model
   {
     $model = $this->transformer->toModel($dto);
 
@@ -176,45 +177,47 @@ abstract class ApplicationService
   {
     $model = $this->find(optional($dto)->id);
 
-    if ($model === null) {
-      return null;
-    }
-
-    return $this->updateModel($model, $dto);
+    return $model !== null ? $this->updateModel($model, $dto) : null;
   }
 
   /**
-   * @param string $id
-   * @return bool
+   * @param int|string $id
+   * @return void
    */
-  public function delete(string $id): bool
+  public function delete($id)
   {
     $model = $this->find($id);
 
-    if ($model === null) {
-      return false;
+    if ($model !== null) {
+      $this->service->delete($model);
     }
-
-    $this->service->delete($model);
-
-    return true;
   }
 
   /**
-   * @param string $id
-   * @return bool
+   * @param int|string $id
+   * @return void
    */
-  public function restore(string $id): bool
+  public function restore($id)
   {
     $model = $this->find($id);
 
-    if ($model === null) {
-      return false;
+    if ($model !== null) {
+      $this->service->restore($model);
     }
+  }
 
-    $this->service->restore($model);
+  /**
+   * @param int|string $id
+   * @return void
+   * @throws Exception
+   */
+  public function forceDelete($id)
+  {
+    $model = $this->find($id);
 
-    return true;
+    if ($model !== null) {
+      $this->service->forceDelete($model);
+    }
   }
 
   /**

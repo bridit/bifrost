@@ -2,9 +2,9 @@
 
 namespace Bifrost\Repositories;
 
-use Illuminate\Support\Collection;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface EntityRepositoryContract

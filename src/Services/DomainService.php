@@ -21,9 +21,9 @@ abstract class DomainService
    */
   public function create(Model $model): Model
   {
-    $model->created_at = Carbon::now()->setTimezone('UTC');
-    $model->updated_at = Carbon::now()->setTimezone('UTC');
-    $model->active = true;
+    $model->created_at ??= Carbon::now()->setTimezone('UTC');
+    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
+    $model->active ??= true;
 
     $model->save();
 
@@ -38,7 +38,7 @@ abstract class DomainService
    */
   public function update(Model $model): Model
   {
-    $model->updated_at = Carbon::now()->setTimezone('UTC');
+    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
 
     $model->save();
 
@@ -49,11 +49,12 @@ abstract class DomainService
    * Set a registry as inactive.
    *
    * @param Model $model
+   * @return void
    */
   public function delete(Model $model)
   {
-    $model->active = false;
-    $model->updated_at = Carbon::now()->setTimezone('UTC');
+    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
+    $model->active ??= false;
 
     $model->save();
   }
@@ -62,11 +63,12 @@ abstract class DomainService
    * Restore an inactive registry.
    *
    * @param Model $model
+   * @return void
    */
   public function restore(Model $model)
   {
-    $model->active = true;
-    $model->updated_at = Carbon::now()->setTimezone('UTC');
+    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
+    $model->active ??= true;
 
     $model->save();
   }
@@ -75,6 +77,7 @@ abstract class DomainService
    * Remove a registry from the database.
    *
    * @param Model $model
+   * @return void
    * @throws Exception
    */
   public function forceDelete(Model $model)
