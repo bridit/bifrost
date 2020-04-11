@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
  * @property bool $active
  * @package Bifrost\Entities
  */
-class Model extends BaseModel implements ModelContract
+class Model extends BaseModel
 {
 
   /**

@@ -5,7 +5,6 @@ namespace Bifrost\Services;
 use Exception;
 use Carbon\Carbon;
 use Bifrost\Entities\Model;
-use Bifrost\Entities\ModelContract;
 
 /**
  * Class DomainService
@@ -20,7 +19,7 @@ abstract class DomainService
    * @param Model $model
    * @return Model
    */
-  public function create($model): Model
+  public function create(Model $model): Model
   {
     $model->created_at ??= Carbon::now()->setTimezone('UTC');
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
@@ -37,7 +36,7 @@ abstract class DomainService
    * @param Model $model
    * @return Model
    */
-  public function update($model): Model
+  public function update(Model $model): Model
   {
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
 
@@ -52,7 +51,7 @@ abstract class DomainService
    * @param Model $model
    * @return void
    */
-  public function delete($model)
+  public function delete(Model $model): void
   {
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
     $model->active ??= false;
@@ -66,7 +65,7 @@ abstract class DomainService
    * @param Model $model
    * @return void
    */
-  public function restore($model)
+  public function restore(Model $model): void
   {
     $model->updated_at ??= Carbon::now()->setTimezone('UTC');
     $model->active ??= true;
@@ -81,7 +80,7 @@ abstract class DomainService
    * @return void
    * @throws Exception
    */
-  public function forceDelete($model)
+  public function forceDelete(Model $model): void
   {
     $model->delete();
   }
