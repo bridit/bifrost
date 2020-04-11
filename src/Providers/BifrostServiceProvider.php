@@ -28,6 +28,13 @@ class BifrostServiceProvider extends ServiceProvider
     $this->mergeConfigFrom(
       __DIR__ . '/../../config/bifrost.php', 'bifrost'
     );
+
+    $this->app->register(AppServiceProvider::class);
+    $this->app->register(AuthServiceProvider::class);
+    $this->app->register(RouteServiceProvider::class);
+    $this->app->register(EventServiceProvider::class);
+    $this->app->register(BroadcastServiceProvider::class);
+    $this->app->register(CorsServiceProvider::class);
   }
 
   protected function loadModulesAdditional()

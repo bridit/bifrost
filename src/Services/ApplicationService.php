@@ -5,7 +5,7 @@ namespace Bifrost\Services;
 use Bifrost\Entities\Model;
 use Illuminate\Support\Collection;
 use Bifrost\DTO\DataTransferObject;
-use Bifrost\Transformers\Transformer;
+use Bifrost\Transformers\ApplicationTransformer;
 use Bifrost\Repositories\EntityRepositoryContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -18,9 +18,9 @@ abstract class ApplicationService
   private ?DomainService $service;
 
   /**
-   * @var Transformer|null
+   * @var ApplicationTransformer|null
    */
-  private ?Transformer $transformer;
+  private ?ApplicationTransformer $transformer;
 
   /**
    * @var EntityRepositoryContract|null
@@ -31,10 +31,10 @@ abstract class ApplicationService
    * ApplicationService constructor.
    *
    * @param DomainService|null $service
-   * @param Transformer|null $transformer
+   * @param ApplicationTransformer|null $transformer
    * @param null|EntityRepositoryContract $repository
    */
-  public function __construct(?DomainService $service = null, ?Transformer $transformer = null, ?EntityRepositoryContract $repository = null)
+  public function __construct(?DomainService $service = null, ?ApplicationTransformer $transformer = null, ?EntityRepositoryContract $repository = null)
   {
     $this->service = $service;
     $this->repository = $repository;

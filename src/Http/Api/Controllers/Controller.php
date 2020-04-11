@@ -4,13 +4,10 @@ namespace Bifrost\Http\Api\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Bifrost\Validation\Validator;
-use Bifrost\DTO\DataTransferObject;
-use League\Fractal\TransformerAbstract;
 use Bifrost\Services\ApplicationService;
-use Bifrost\Validation\ValidatesRequests;
 use Bifrost\Http\Api\JsonApi\JsonApiAware;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Bifrost\Transformers\InterfaceTransformer;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests as IlluminateValidatesRequests;
@@ -21,8 +18,7 @@ abstract class Controller extends BaseController
     AuthorizesRequests,
     DispatchesJobs,
     IlluminateValidatesRequests,
-    JsonApiAware,
-    ValidatesRequests;
+    JsonApiAware;
 
   /**
    * @var Request
@@ -35,24 +31,18 @@ abstract class Controller extends BaseController
   protected ApplicationService $service;
 
   /**
-   * @var Validator
+   * @var InterfaceTransformer
    */
-  protected Validator $validator;
-
-  /**
-   * @var TransformerAbstract
-   */
-  protected TransformerAbstract $transformer;
+  protected InterfaceTransformer $transformer;
 
   /**
    * Controller constructor.
    * @param ApplicationService $service
-   * @param Validator|null $validator
+   * @param InterfaceTransformer $transformer
    */
-  public function __construct(ApplicationService $service, TransformerAbstract $transformer, ?Validator $validator = null)
+  public function __construct(ApplicationService $service, InterfaceTransformer $transformer)
   {
     $this->service = $service;
-    $this->validator = $validator;
     $this->transformer = $transformer;
   }
 
@@ -64,44 +54,12 @@ abstract class Controller extends BaseController
     return $this->service;
   }
 
-    /**
-     * @return TransformerAbstract
-     */
-  public function getTransformer(): TransformerAbstract
-  {
-      return $this->transformer;
-  }
-
   /**
-   * @return null|Validator
+   * @return InterfaceTransformer
    */
-  public function getValidator(): ?Validator
+  public function getTransformer(): InterfaceTransformer
   {
-    return $this->validator;
-  }
-
-  /**
-   * Execute an action on the controller.
-   *
-   * @param  string $method
-   * @param  array $parameters
-   * @return \Symfony\Component\HttpFoundation\Response
-   */
-  public function callAction($method, $parameters)
-  {
-    # Check ACL
-    if (!$this->aclValidation($method)) {
-      return $this->errorResponse([$this->getNotAuthorizedError()], 403);
-    }
-
-    # Check Attributes
-    $validation = $this->dataValidation($method, $parameters);
-    if (!blank($validation)) {
-      return $this->errorResponse($validation, 422);
-    }
-
-    # Call Method
-    return call_user_func_array([$this, $method], $parameters);
+    return $this->transformer;
   }
 
   /**

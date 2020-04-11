@@ -3,10 +3,18 @@
 namespace Bifrost\Providers;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
+
+  /**
+   * The path to the "home" route for your application.
+   *
+   * @var string
+   */
+  public const HOME = '/home';
 
   /**
    * App modules base namespace.
@@ -39,7 +47,7 @@ class RouteServiceProvider extends ServiceProvider
   /**
    * Create a new service provider instance.
    *
-   * @param  \Illuminate\Contracts\Foundation\Application  $app
+   * @param  Application  $app
    * @return void
    */
   public function __construct($app)
@@ -120,7 +128,6 @@ class RouteServiceProvider extends ServiceProvider
         }
       }
     }
-
   }
 
 }

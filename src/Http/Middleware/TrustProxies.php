@@ -3,6 +3,7 @@
 namespace Bifrost\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Contracts\Config\Repository;
 use Fideloper\Proxy\TrustProxies as Middleware;
 
@@ -22,9 +23,14 @@ class TrustProxies extends Middleware
    */
   protected $headers = Request::HEADER_X_FORWARDED_ALL;
 
+  /**
+   * Create a new trusted proxies middleware instance.
+   *
+   * @param Repository $config
+   */
   public function __construct(Repository $config)
   {
-    $this->proxies = config('bifrost.http.proxies');
+    $this->proxies = Config::get('bifrost.http.proxies');
 
     parent::__construct($config);
   }

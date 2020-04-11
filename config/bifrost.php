@@ -38,6 +38,7 @@ return [
        */
       'middleware' => [
         \Bifrost\Http\Middleware\TrustProxies::class,
+        \Bifrost\Http\Middleware\HandleCors::class,
         \Bifrost\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Bifrost\Http\Middleware\TrimStrings::class,
@@ -60,7 +61,7 @@ return [
 
         'api' => [
           'throttle:60,1',
-          'bindings',
+          \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
       ],
 
@@ -76,26 +77,10 @@ return [
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \Bifrost\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-      ],
-
-      /*
-       * The priority-sorted list of middleware.
-       *
-       * This forces non-global middleware to always be in the given order.
-       *
-       * @var array
-       */
-      'middlewarePriority' => [
-        \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \Bifrost\Http\Middleware\Authenticate::class,
-        \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        \Illuminate\Session\Middleware\AuthenticateSession::class,
-        \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        \Illuminate\Auth\Middleware\Authorize::class,
       ],
     ],
 

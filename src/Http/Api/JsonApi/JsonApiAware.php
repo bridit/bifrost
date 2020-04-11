@@ -3,6 +3,7 @@
 namespace Bifrost\Http\Api\JsonApi;
 
 use Illuminate\Support\Arr;
+use Illuminate\Http\JsonResponse;
 use League\Fractal\Serializer\JsonApiSerializer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -43,7 +44,7 @@ trait JsonApiAware
    * @param $errors
    * @param int|null $defaultHttpCode
    * @param array $headers
-   * @return \Illuminate\Http\JsonResponse
+   * @return JsonResponse
    */
   public function errorResponse($errors, ?int $defaultHttpCode = 422, array $headers = [])
   {
