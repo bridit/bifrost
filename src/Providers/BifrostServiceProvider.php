@@ -31,7 +31,6 @@ class BifrostServiceProvider extends ServiceProvider
       __DIR__ . '/../../config/bifrost.php', 'bifrost'
     );
 
-    $this->app->register(RoutingServiceProvider::class);
     $this->app->register(Config::get('bifrost.app.service_provider', AppServiceProvider::class));
     $this->app->register(Config::get('bifrost.auth.service_provider', AuthServiceProvider::class));
     $this->app->register(Config::get('bifrost.http.service_provider', RouteServiceProvider::class));
