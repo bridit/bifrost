@@ -45,7 +45,10 @@
   "extra": {
     "laravel": {
       "dont-discover": []
-    }
+    },
+    "providers": [
+      "Bifrost\\Providers\\BifrostServiceProvider"
+    ]
   },
   "autoload": {
     "psr-4": {
