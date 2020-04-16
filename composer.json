@@ -44,11 +44,11 @@
   },
   "extra": {
     "laravel": {
+      "providers": [
+        "Bifrost\\Providers\\BifrostServiceProvider"
+      ],
       "dont-discover": []
-    },
-    "providers": [
-      "Bifrost\\Providers\\BifrostServiceProvider"
-    ]
+    }
   },
   "autoload": {
     "psr-4": {
