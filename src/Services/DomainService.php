@@ -22,7 +22,7 @@ abstract class DomainService
   public function create(Model $model): Model
   {
     $model->created_at ??= Carbon::now()->setTimezone('UTC');
-    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
+    $model->updated_at = Carbon::now()->setTimezone('UTC');
     $model->active ??= true;
 
     $model->save();
@@ -38,7 +38,7 @@ abstract class DomainService
    */
   public function update(Model $model): Model
   {
-    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
+    $model->updated_at = Carbon::now()->setTimezone('UTC');
 
     $model->save();
 
@@ -51,12 +51,29 @@ abstract class DomainService
    * @param Model $model
    * @return void
    */
-  public function delete(Model $model): void
+  public function trash(Model $model): void
   {
-    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
-    $model->active ??= false;
+    $model->updated_at = Carbon::now()->setTimezone('UTC');
+    $model->active = false;
 
     $model->save();
+  }
+
+  /**
+   * Set multiple registries as inactive.
+   *
+   * @param iterable $models
+   * @return void
+   */
+  public function trashMultiple(iterable $models): void
+  {
+    foreach ($models as $model)
+    {
+      $model->updated_at = Carbon::now()->setTimezone('UTC');
+      $model->active = false;
+
+      $model->save();
+    }
   }
 
   /**
@@ -65,12 +82,29 @@ abstract class DomainService
    * @param Model $model
    * @return void
    */
-  public function restore(Model $model): void
+  public function untrash(Model $model): void
   {
-    $model->updated_at ??= Carbon::now()->setTimezone('UTC');
-    $model->active ??= true;
+    $model->updated_at = Carbon::now()->setTimezone('UTC');
+    $model->active = true;
 
     $model->save();
+  }
+
+  /**
+   * Restore multiple inactive registries.
+   *
+   * @param iterable $models
+   * @return void
+   */
+  public function untrashMultiple(iterable $models): void
+  {
+    foreach ($models as $model)
+    {
+      $model->updated_at = Carbon::now()->setTimezone('UTC');
+      $model->active = true;
+
+      $model->save();
+    }
   }
 
   /**
@@ -80,7 +114,7 @@ abstract class DomainService
    * @return void
    * @throws Exception
    */
-  public function forceDelete(Model $model): void
+  public function delete(Model $model): void
   {
     $model->delete();
   }

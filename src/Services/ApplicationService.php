@@ -151,11 +151,11 @@ abstract class ApplicationService
   {
     $model = $this->find(optional($dto)->id);
 
-    if ($model === null) {
+    if (blank($model)) {
       return $this->create($dto);
     }
 
-    return $this->updateModel($model, $dto);
+    return $this->update($model, $dto);
   }
 
   /**
@@ -173,18 +173,21 @@ abstract class ApplicationService
    * @param DataTransferObject $dto
    * @return Model|null
    */
-  public function update(DataTransferObject $dto): ?Model
+  public function update(Model $model, DataTransferObject $dto): ?Model
   {
-    $model = $this->find(optional($dto)->id);
+    $this->transformer->prepareForUpdate($model, $dto);
 
-    return $model !== null ? $this->updateModel($model, $dto) : null;
+    return $this->service->update($model);
   }
 
   /**
+   * Set a registry as inactive.
+   *
    * @param int|string $id
    * @return void
+   * @throws Exception
    */
-  public function delete($id)
+  public function trash($id): void
   {
     $model = $this->find($id);
 
@@ -194,10 +197,27 @@ abstract class ApplicationService
   }
 
   /**
+   * Set multiple registries as inactive.
+   *
+   * @param iterable $ids
+   * @return void
+   * @throws Exception
+   */
+  public function trashMultiple(iterable $ids): void
+  {
+    foreach ($ids as $id)
+    {
+      $this->trash($id);
+    }
+  }
+
+  /**
+   * Restore an inactive registry.
+   *
    * @param int|string $id
    * @return void
    */
-  public function restore($id)
+  public function untrash($id): void
   {
     $model = $this->find($id);
 
@@ -207,11 +227,25 @@ abstract class ApplicationService
   }
 
   /**
+   * Restore multiple inactive registries.
+   *
+   * @param iterable $ids
+   * @return void
+   */
+  public function untrashMultiple(iterable $ids): void
+  {
+    foreach ($ids as $id)
+    {
+      $this->untrash($id);
+    }
+  }
+
+  /**
    * @param int|string $id
    * @return void
    * @throws Exception
    */
-  public function forceDelete($id)
+  public function delete($id)
   {
     $model = $this->find($id);
 

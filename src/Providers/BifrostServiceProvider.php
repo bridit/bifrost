@@ -2,6 +2,8 @@
 
 namespace Bifrost\Providers;
 
+use Illuminate\Support\Facades\Config;
+
 class BifrostServiceProvider extends ServiceProvider
 {
   /**
@@ -29,11 +31,12 @@ class BifrostServiceProvider extends ServiceProvider
       __DIR__ . '/../../config/bifrost.php', 'bifrost'
     );
 
-    $this->app->register(AppServiceProvider::class);
-    $this->app->register(AuthServiceProvider::class);
-    $this->app->register(RouteServiceProvider::class);
-    $this->app->register(EventServiceProvider::class);
-    $this->app->register(BroadcastServiceProvider::class);
+    $this->app->register(RoutingServiceProvider::class);
+    $this->app->register(Config::get('bifrost.app.service_provider', AppServiceProvider::class));
+    $this->app->register(Config::get('bifrost.auth.service_provider', AuthServiceProvider::class));
+    $this->app->register(Config::get('bifrost.http.service_provider', RouteServiceProvider::class));
+    $this->app->register(Config::get('bifrost.event.service_provider', EventServiceProvider::class));
+    $this->app->register(Config::get('bifrost.broadcast.service_provider', BroadcastServiceProvider::class));
     $this->app->register(CorsServiceProvider::class);
   }
 

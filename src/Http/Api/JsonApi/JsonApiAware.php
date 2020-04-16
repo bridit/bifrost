@@ -15,7 +15,7 @@ trait JsonApiAware
    * @param $data
    * @param int|null $defaultHttpCode
    * @param array $headers
-   * @return mixed
+   * @return JsonResponse
    */
   public function response($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
@@ -29,7 +29,7 @@ trait JsonApiAware
    * @param LengthAwarePaginator $data
    * @param int|null $defaultHttpCode
    * @param array $headers
-   * @return mixed
+   * @return JsonResponse
    */
   public function paginate(LengthAwarePaginator $data, ?int $defaultHttpCode = 200, array $headers = [])
   {
