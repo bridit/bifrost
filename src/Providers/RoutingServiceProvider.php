@@ -19,11 +19,11 @@ class RoutingServiceProvider extends ServiceProvider
   }
 
   /**
-   * Define the routes for the application.
+   * Register any application services.
    *
    * @return void
    */
-  public function map()
+  public function register()
   {
     $this->app->extend('router', function ($router, $app) {
       return new Router($app['events'], $app);
