@@ -63,6 +63,39 @@ abstract class Controller extends BaseController
   }
 
   /**
+   * Get the map of resource methods to ability names.
+   *
+   * @return array
+   */
+  protected function resourceAbilityMap()
+  {
+    return [
+      'index' => 'viewAny',
+      'show' => 'view',
+      'create' => 'create',
+      'store' => 'create',
+      'edit' => 'update',
+      'update' => 'update',
+      'trashed' => 'trashed',
+      'trash' => 'trash',
+      'untrash' => 'untrash',
+      'untrashMultiple' => 'untrashMultiple',
+      'destroy' => 'delete',
+      'destroyMultiple' => 'deleteMultiple',
+    ];
+  }
+
+  /**
+   * Get the list of resource methods which do not have model parameters.
+   *
+   * @return array
+   */
+  protected function resourceMethodsWithoutModels()
+  {
+    return ['index', 'create', 'store', 'trashed', 'destroyMultiple', 'untrashMultiple'];
+  }
+
+  /**
    * @param $request
    * @return JsonResponse
    */
