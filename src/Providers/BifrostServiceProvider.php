@@ -36,7 +36,7 @@ class BifrostServiceProvider extends ServiceProvider
     $this->app->register(Config::get('bifrost.auth.service_provider', AuthServiceProvider::class));
     $this->app->register(Config::get('bifrost.http.service_provider', RouteServiceProvider::class));
     $this->app->register(Config::get('bifrost.event.service_provider', EventServiceProvider::class));
-    $this->app->register(Config::get('bifrost.broadcast.service_provider', BroadcastServiceProvider::class));
+//    $this->app->register(Config::get('bifrost.broadcast.service_provider', BroadcastServiceProvider::class));
     $this->app->register(CorsServiceProvider::class);
   }
 
