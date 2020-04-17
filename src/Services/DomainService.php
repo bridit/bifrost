@@ -17,51 +17,48 @@ abstract class DomainService
    * Create a new registry in the database.
    *
    * @param Model $model
-   * @return Model
+   * @return null|Model
    */
-  public function create(Model $model): Model
+  public function create(Model $model): ?Model
   {
     $model->created_at ??= Carbon::now()->setTimezone('UTC');
     $model->updated_at = Carbon::now()->setTimezone('UTC');
     $model->active ??= true;
 
-    $model->save();
-
-    return $model;
+    return $model->save() ? $model : null;
   }
 
   /**
    * Update a registry in the database.
    *
    * @param Model $model
-   * @return Model
+   * @return null|Model
    */
-  public function update(Model $model): Model
+  public function update(Model $model): ?Model
   {
     $model->updated_at = Carbon::now()->setTimezone('UTC');
 
-    $model->save();
-
-    return $model;
+    return $model->save() ? $model : null;
   }
 
   /**
    * Set a registry as inactive.
    *
    * @param Model $model
-   * @return void
+   * @return bool
    */
-  public function trash(Model $model): void
+  public function trash(Model $model): bool
   {
     $model->updated_at = Carbon::now()->setTimezone('UTC');
     $model->active = false;
 
-    $model->save();
+    return $model->save();
   }
 
   /**
    * Set multiple registries as inactive.
    *
+   * @todo Implement method return
    * @param iterable $models
    * @return void
    */
@@ -69,10 +66,7 @@ abstract class DomainService
   {
     foreach ($models as $model)
     {
-      $model->updated_at = Carbon::now()->setTimezone('UTC');
-      $model->active = false;
-
-      $model->save();
+      $this->trash($model);
     }
   }
 
@@ -80,19 +74,20 @@ abstract class DomainService
    * Restore an inactive registry.
    *
    * @param Model $model
-   * @return void
+   * @return bool
    */
-  public function untrash(Model $model): void
+  public function untrash(Model $model): bool
   {
     $model->updated_at = Carbon::now()->setTimezone('UTC');
     $model->active = true;
 
-    $model->save();
+    return $model->save();
   }
 
   /**
    * Restore multiple inactive registries.
    *
+   * @todo Implement method return
    * @param iterable $models
    * @return void
    */
@@ -100,22 +95,36 @@ abstract class DomainService
   {
     foreach ($models as $model)
     {
-      $model->updated_at = Carbon::now()->setTimezone('UTC');
-      $model->active = true;
-
-      $model->save();
+      $this->untrash($model);
     }
   }
 
   /**
-   * Remove a registry from the database.
+   * Remove a registry from database.
    *
    * @param Model $model
+   * @return null|bool
+   * @throws Exception
+   */
+  public function delete(Model $model): ?bool
+  {
+    return $model->delete();
+  }
+
+  /**
+   * Remove multiple registries from database.
+   *
+   * @todo Implement method return
+   * @param iterable $models
    * @return void
    * @throws Exception
    */
-  public function delete(Model $model): void
+  public function deleteMultiple(iterable $models): void
   {
-    $model->delete();
+    foreach ($models as $model)
+    {
+      $this->delete($model);
+    }
   }
+
 }

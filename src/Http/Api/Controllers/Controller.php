@@ -83,12 +83,8 @@ abstract class Controller extends BaseController
    * @param $request
    * @return JsonResponse
    */
-  protected function doIndex($request)
+  protected function findPaginated($request)
   {
-    if (!$request->has('page')) {
-      return $this->response($this->service->findWithQueryBuilder());
-    }
-
     $paginated = $this->service->paginate(
       $request->input('page.size', $request->input('page.limit', null)),
       $request->input('page.number', $request->input('page.offset', null)),
@@ -97,4 +93,5 @@ abstract class Controller extends BaseController
 
     return $this->paginate($paginated);
   }
+
 }

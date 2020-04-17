@@ -160,9 +160,9 @@ abstract class ApplicationService
 
   /**
    * @param DataTransferObject $dto
-   * @return Model
+   * @return null|Model
    */
-  public function create(DataTransferObject $dto): Model
+  public function create(DataTransferObject $dto): ?Model
   {
     $model = $this->transformer->toModel($dto);
 
@@ -170,8 +170,9 @@ abstract class ApplicationService
   }
 
   /**
+   * @param Model $model
    * @param DataTransferObject $dto
-   * @return Model|null
+   * @return null|Model
    */
   public function update(Model $model, DataTransferObject $dto): ?Model
   {
@@ -181,19 +182,34 @@ abstract class ApplicationService
   }
 
   /**
+   * Get registries from trash.
+   *
+   * @param array|null $orderBy
+   * @param null $limit
+   * @param null $offset
+   * @return null|Collection
+   */
+  public function trashed(?array $orderBy = null, $limit = null, $offset = null): ?Collection
+  {
+    return $this->repository->findBy(['active' => false], $orderBy, $limit, $offset);
+  }
+
+  /**
    * Set a registry as inactive.
    *
    * @param int|string $id
-   * @return void
+   * @return bool
    * @throws Exception
    */
-  public function trash($id): void
+  public function trash($id): bool
   {
     $model = $this->find($id);
 
-    if ($model !== null) {
-      $this->service->delete($model);
+    if ($model === null) {
+      return false;
     }
+
+    return $this->service->trash($model);
   }
 
   /**
@@ -205,25 +221,26 @@ abstract class ApplicationService
    */
   public function trashMultiple(iterable $ids): void
   {
-    foreach ($ids as $id)
-    {
-      $this->trash($id);
-    }
+    $models = $this->repository->find($ids);
+
+    $this->service->trashMultiple($models);
   }
 
   /**
    * Restore an inactive registry.
    *
    * @param int|string $id
-   * @return void
+   * @return bool
    */
-  public function untrash($id): void
+  public function untrash($id): bool
   {
     $model = $this->find($id);
 
-    if ($model !== null) {
-      $this->service->restore($model);
+    if ($model === null) {
+      return false;
     }
+
+    return $this->service->untrash($model);
   }
 
   /**
@@ -234,36 +251,39 @@ abstract class ApplicationService
    */
   public function untrashMultiple(iterable $ids): void
   {
-    foreach ($ids as $id)
-    {
-      $this->untrash($id);
-    }
+    $models = $this->repository->find($ids);
+
+    $this->service->untrashMultiple($models);
   }
 
   /**
    * @param int|string $id
-   * @return void
+   * @return bool
    * @throws Exception
    */
-  public function delete($id)
+  public function delete($id): bool
   {
     $model = $this->find($id);
 
-    if ($model !== null) {
-      $this->service->forceDelete($model);
+    if ($model === null) {
+      return false;
     }
+
+    return $this->service->delete($model);
   }
 
   /**
-   * @param Model $model
-   * @param DataTransferObject $dto
-   * @return Model
+   * Remove multiple registries from database.
+   *
+   * @param iterable $ids
+   * @return void
+   * @throws Exception
    */
-  protected function updateModel(Model $model, DataTransferObject $dto): Model
+  public function deleteMultiple(iterable $ids): void
   {
-    $this->transformer->prepareForUpdate($model, $dto);
+    $models = $this->repository->find($ids);
 
-    return $this->service->update($model);
+    $this->service->deleteMultiple($models);
   }
 
 }
