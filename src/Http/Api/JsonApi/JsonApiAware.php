@@ -21,7 +21,7 @@ trait JsonApiAware
   {
     return fractal($data, $this->transformer)
       ->serializeWith(new JsonApiSerializer())
-      ->withResourceName(class_basename($this->getService()->getEntityClassName()))
+      ->withResourceName(class_basename($this->service->getEntityClassName()))
       ->respond($defaultHttpCode, $this->getHeaders($headers));
   }
 
@@ -35,7 +35,7 @@ trait JsonApiAware
   {
     return fractal($data, $this->transformer)
       ->serializeWith(new JsonApiSerializer())
-      ->withResourceName(class_basename($this->getService()->getEntityClassName()))
+      ->withResourceName(class_basename($this->service->getEntityClassName()))
       ->paginateWith(new IlluminatePaginatorAdapter($data))
       ->respond($defaultHttpCode, $this->getHeaders($headers));
   }
