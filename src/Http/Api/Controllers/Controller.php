@@ -60,8 +60,8 @@ abstract class Controller extends BaseController
       'store' => 'create',
       'edit' => 'update',
       'update' => 'update',
-      'trashed' => 'trashed',
       'trash' => 'trash',
+      'trashMultiple' => 'trashMultiple',
       'untrash' => 'untrash',
       'untrashMultiple' => 'untrashMultiple',
       'destroy' => 'delete',
@@ -76,7 +76,7 @@ abstract class Controller extends BaseController
    */
   protected function resourceMethodsWithoutModels()
   {
-    return ['index', 'create', 'store', 'trashed', 'destroyMultiple', 'untrashMultiple'];
+    return ['index', 'create', 'store', 'destroyMultiple', 'untrashMultiple'];
   }
 
   /**

@@ -71,8 +71,8 @@ class RouteServiceProvider extends ServiceProvider
     Route::macro('fullResource', function ($name, $controller, array $options = []) {
       $name = substr($name, 0, 1) !== '/' ?: substr($name, 1, strlen($name));
 
-      Route::get('/' . $name . '/trashed', $controller . '@trashed')->name($name . '.trashed');
       Route::put('/' . $name . '/{' . Str::singular($name) . '}/trash', $controller . '@trash')->name($name . '.trash');
+      Route::put('/' . $name . '/trash', $controller . '@trashMultiple')->name($name . '.trashMultiple');
       Route::put('/' . $name . '/{' . Str::singular($name) . '}/untrash', $controller . '@untrash')->name($name . '.untrash');
       Route::put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name($name . '.untrashMultiple');
       Route::delete('/' . $name, $controller . '@destroyMultiple')->name($name . '.destroyMultiple');
@@ -82,8 +82,8 @@ class RouteServiceProvider extends ServiceProvider
     Route::macro('fullApiResource', function ($name, $controller, array $options = []) {
       $name = substr($name, 0, 1) !== '/' ?: substr($name, 1, strlen($name));
 
-      Route::get('/' . $name . '/trashed', $controller . '@trashed')->name($name . '.trashed');
       Route::put('/' . $name . '/{id}/trash', $controller . '@trash')->name($name . '.trash');
+      Route::put('/' . $name . '/trash', $controller . '@trashMultiple')->name($name . '.trashMultiple');
       Route::put('/' . $name . '/{id}/untrash', $controller . '@untrash')->name($name . '.untrash');
       Route::put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name($name . '.untrashMultiple');
       Route::delete('/' . $name, $controller . '@destroyMultiple')->name($name . '.destroyMultiple');
