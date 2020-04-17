@@ -76,7 +76,7 @@ abstract class Controller extends BaseController
    */
   protected function resourceMethodsWithoutModels()
   {
-    return ['index', 'create', 'store', 'destroyMultiple', 'untrashMultiple'];
+    return ['index', 'create', 'store', 'trashMultiple', 'destroyMultiple', 'untrashMultiple'];
   }
 
   /**
