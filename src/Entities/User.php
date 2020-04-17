@@ -23,16 +23,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
   ];
 
   /**
-   * The user has an Administrator Profile?
-   *
-   * @return bool
-   */
-  public function isAdmin(): bool
-  {
-    //
-  }
-
-  /**
    * The user has a Super Administrator Profile (highest profile)?
    *
    * @return bool
