@@ -9,15 +9,15 @@ use Bifrost\Http\Api\JsonApi\JsonApiAware;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Bifrost\Transformers\InterfaceTransformer;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests as IlluminateValidatesRequests;
 
 abstract class Controller extends BaseController
 {
   use
     AuthorizesRequests,
     DispatchesJobs,
-    IlluminateValidatesRequests,
+    ValidatesRequests,
     JsonApiAware;
 
   /**
@@ -44,22 +44,6 @@ abstract class Controller extends BaseController
   {
     $this->service = $service;
     $this->transformer = $transformer;
-  }
-
-  /**
-   * @return ApplicationService
-   */
-  public function getService(): ApplicationService
-  {
-    return $this->service;
-  }
-
-  /**
-   * @return InterfaceTransformer
-   */
-  public function getTransformer(): InterfaceTransformer
-  {
-    return $this->transformer;
   }
 
   /**
