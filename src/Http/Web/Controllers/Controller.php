@@ -2,8 +2,6 @@
 
 namespace Bifrost\Http\Web\Controllers;
 
-use Illuminate\Http\Request;
-use Bifrost\Validation\Validator;
 use Bifrost\Services\ApplicationService;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -15,25 +13,17 @@ abstract class Controller extends BaseController
   use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
   /**
-   * @var ApplicationService
+   * @var null|ApplicationService
    */
-  protected ApplicationService $service;
+  protected ?ApplicationService $service;
 
   /**
    * Controller constructor.
-   * @param ApplicationService $service
+   * @param null|ApplicationService $service
    */
-  public function __construct(ApplicationService $service)
+  public function __construct(?ApplicationService $service = null)
   {
     $this->service = $service;
-  }
-
-  /**
-   * @return ApplicationService
-   */
-  public function getService(): ApplicationService
-  {
-    return $this->service;
   }
 
 }
