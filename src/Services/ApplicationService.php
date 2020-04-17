@@ -16,17 +16,17 @@ abstract class ApplicationService
   /**
    * @var DomainService|null
    */
-  private ?DomainService $service;
+  protected ?DomainService $service;
 
   /**
    * @var ApplicationTransformer|null
    */
-  private ?ApplicationTransformer $transformer;
+  protected ?ApplicationTransformer $transformer;
 
   /**
    * @var EntityRepositoryContract|null
    */
-  private EntityRepositoryContract $repository;
+  protected EntityRepositoryContract $repository;
 
   /**
    * ApplicationService constructor.
