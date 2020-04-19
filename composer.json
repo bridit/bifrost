@@ -22,12 +22,12 @@
     "fideloper/proxy": "^4.3",
     "guzzlehttp/guzzle": "^6.3",
     "laravel/framework": "^7.0",
-    "ramsey/uuid": "^4.0",
     "spatie/laravel-enum": "^1.4",
     "spatie/laravel-fractal": "^5.7",
     "spatie/laravel-query-builder": "^2.8",
     "spatie/laravel-responsecache": "^6.6",
-    "spatie/laravel-schemaless-attributes": "^1.7"
+    "spatie/laravel-schemaless-attributes": "^1.7",
+    "webpatser/laravel-uuid": "^3.0"
   },
   "require-dev": {
     "facade/ignition": "^2.0",

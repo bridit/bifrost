@@ -2,7 +2,7 @@
 
 namespace Bifrost\Entities;
 
-use Ramsey\Uuid\Uuid;
+use Webpatser\Uuid\Uuid;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 use Bifrost\Repositories\EntityRepositoryContract;
@@ -49,7 +49,7 @@ class BaseModel extends Model
 
     static::creating(function (self $model): void {
       if ($model->uuidKey && empty($model->{$model->getKeyName()})) {
-        $model->{$model->getKeyName()} = Uuid::uuid4();
+        $model->{$model->getKeyName()} = Uuid::generate(4);
       }
     });
   }
