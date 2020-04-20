@@ -197,18 +197,12 @@ abstract class ApplicationService
   /**
    * Set a registry as inactive.
    *
-   * @param int|string $id
+   * @param Model $model
    * @return bool
    * @throws Exception
    */
-  public function trash($id): bool
+  public function trash(Model $model): bool
   {
-    $model = $this->find($id);
-
-    if ($model === null) {
-      return false;
-    }
-
     return $this->service->trash($model);
   }
 
@@ -229,17 +223,11 @@ abstract class ApplicationService
   /**
    * Restore an inactive registry.
    *
-   * @param int|string $id
+   * @param Model $model
    * @return bool
    */
-  public function untrash($id): bool
+  public function untrash(Model $model): bool
   {
-    $model = $this->find($id);
-
-    if ($model === null) {
-      return false;
-    }
-
     return $this->service->untrash($model);
   }
 
@@ -257,18 +245,12 @@ abstract class ApplicationService
   }
 
   /**
-   * @param int|string $id
+   * @param Model $model
    * @return bool
    * @throws Exception
    */
-  public function delete($id): bool
+  public function delete(Model $model): bool
   {
-    $model = $this->find($id);
-
-    if ($model === null) {
-      return false;
-    }
-
     return $this->service->delete($model);
   }
 
