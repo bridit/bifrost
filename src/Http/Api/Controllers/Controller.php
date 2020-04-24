@@ -2,8 +2,11 @@
 
 namespace Bifrost\Http\Api\Controllers;
 
+use Exception;
+use Bifrost\Entities\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Bifrost\DTO\DataTransferObject;
 use Bifrost\Services\ApplicationService;
 use Bifrost\Http\Api\JsonApi\JsonApiAware;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -92,6 +95,125 @@ abstract class Controller extends BaseController
     );
 
     return $this->paginate($paginated);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   */
+  protected function executeShow(Model $model)
+  {
+    return $this->response($model, 200);
+  }
+
+  /**
+   * @param DataTransferObject $dto
+   * @return JsonResponse
+   * @throws ReflectionException
+   */
+  protected function executeStore(DataTransferObject $dto)
+  {
+    $model = $this->service->create($dto);
+
+    if(blank($model)){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be created. Please try again later.', 400)]);
+    }
+
+    return $this->response($model, 201);
+  }
+
+  /**
+   * @param Model $model
+   * @param DataTransferObject $dto
+   * @return JsonResponse
+   * @throws ReflectionException
+   */
+  protected function executeUpdate(Model $model, DataTransferObject $dto)
+  {
+    $model = $this->service->update($model, $dto);
+
+    if(blank($model)){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be updated. Please try again later.', 400)]);
+    }
+
+    return $this->response($model, 201);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeTrash(Model $model)
+  {
+    if($this->service->trash($model) === false){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be trashed. Please try again later.', 400)]);
+    }
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeTrashMultiple(Request $request)
+  {
+    $this->service->trashMultiple($request->get('id', []));
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   */
+  protected function executeUntrash(Model $model)
+  {
+    if($this->service->untrash($model) === false){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be untrashed. Please try again later.', 400)]);
+    }
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeUntrashMultiple(Request $request)
+  {
+    $this->service->untrashMultiple($request->get('id', []));
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeDestroy(Model $model)
+  {
+    if($this->service->delete($model) === false){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be deleted. Please try again later.', 400)]);
+    }
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeDestroyMultiple(Request $request)
+  {
+    $this->service->destroyMultiple($request->get('id', []));
+
+    return $this->response(null, 204);
   }
 
 }
