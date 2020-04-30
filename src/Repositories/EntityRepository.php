@@ -82,7 +82,7 @@ class EntityRepository implements EntityRepositoryContract
     }
 
     if (blank($orderBy) && !blank($this->defaultSort)) {
-      $orderBy = substr($this->defaultSort, 0, 1) === '-'
+      $orderBy = $this->defaultSort[0] !== '-'
         ? [$this->defaultSort => 'asc']
         : [substr($this->defaultSort, 1, strlen($this->defaultSort)) => 'desc'];
     }
