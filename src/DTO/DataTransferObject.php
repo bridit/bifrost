@@ -40,6 +40,7 @@ class DataTransferObject
 
       if ($reflectionProperty->getType()->getName() === 'Carbon\Carbon') {
         $this->{Str::camel($property)} = Carbon::parse($value ?? $default);
+        continue;
       }
 
       $this->{Str::camel($property)} = $value ?? $default;
