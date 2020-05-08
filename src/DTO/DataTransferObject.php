@@ -2,6 +2,7 @@
 
 namespace Bifrost\DTO;
 
+use Carbon\Carbon;
 use ReflectionClass;
 use ReflectionProperty;
 use ReflectionException;
@@ -24,10 +25,12 @@ class DataTransferObject
   public function __construct(array $parameters = [])
   {
     $class = new ReflectionClass(static::class);
+    $defaultProperties = $class->getDefaultProperties();
 
     foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty){
       $property = $reflectionProperty->getName();
       $value = data_get($parameters, Str::snake($property));
+      $default = data_get($defaultProperties, Str::camel($property));
       $setter = 'set' . ucfirst($reflectionProperty->getName());
 
       if ($class->hasMethod($setter)) {
@@ -35,7 +38,11 @@ class DataTransferObject
         continue;
       }
 
-      $this->{Str::camel($property)} = $value;
+      if ($reflectionProperty->getType()->getName() === 'Carbon\Carbon') {
+        $this->{Str::camel($property)} = Carbon::parse($value ?? $default);
+      }
+
+      $this->{Str::camel($property)} = $value ?? $default;
     }
 
     $this->requestData = $parameters;
