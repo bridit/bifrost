@@ -4,14 +4,13 @@ namespace Bifrost\Entities;
 
 use Webpatser\Uuid\Uuid;
 use Illuminate\Support\Facades\App;
-use Illuminate\Database\Eloquent\Model;
 use Bifrost\Repositories\EntityRepositoryContract;
 
 /**
  * Class BaseModel
  * @package Bifrost\Entities
  */
-class BaseModel extends Model
+class BaseModel extends \Bifrost\Database\Eloquent\Model
 {
 
   /**
