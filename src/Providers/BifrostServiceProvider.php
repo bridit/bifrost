@@ -3,6 +3,8 @@
 namespace Bifrost\Providers;
 
 use Illuminate\Support\Facades\Config;
+use League\Fractal\Serializer\JsonApiSerializer;
+use Illuminate\Validation\Factory as ValidationFactory;
 
 class BifrostServiceProvider extends ServiceProvider
 {
@@ -38,6 +40,12 @@ class BifrostServiceProvider extends ServiceProvider
 //    $this->app->register(Config::get('bifrost.broadcast.service_provider', BroadcastServiceProvider::class));
     $this->app->register(CorsServiceProvider::class);
     $this->app->register(\Webpatser\Uuid\UuidServiceProvider::class);
+
+    if (Config::get('bifrost.http.api.serializer', JsonApiSerializer::class) === JsonApiSerializer::class) {
+      $this->app->extend(ValidationFactory::class, function ($service, $app) {
+        return new \Bifrost\Validation\Factory($service->getTranslator(), $app);
+      });
+    }
   }
 
   protected function loadModulesAdditional()

@@ -3,197 +3,56 @@
 namespace Bifrost\Exceptions;
 
 use Throwable;
+use Exception;
+use Bifrost\Http\Api\JsonApi\Error\Error;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class JsonApiException extends \Exception
+class JsonApiException extends Exception implements Throwable, HttpExceptionInterface
 {
-  /**
-   * A unique identifier for this particular occurrence of the problem.
-   * @var null|string
-   */
-  protected $id = null;
+
+  protected Error $error;
 
   /**
-   * The HTTP status code applicable to this problem, expressed as a string value.
-   * @var null|string
+   * @param string|null $message
+   * @param string|null $code
+   * @param Throwable|null $previous
+   * @return static
    */
-  protected $status = null;
+  public static function create(?string $message = null, ?string $code = null, ?Throwable $previous = null): self
+  {
+    return new self($message, $code, $previous);
+  }
 
   /**
-   * An application-specific error code, expressed as a string value.
-   * @var null|int
+   * JsonApiException constructor.
+   * @param string|null $message
+   * @param string|null $code
+   * @param Throwable|null $previous
    */
-  protected $code = null;
-
-  /**
-   * A short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem,
-   * except for purposes of localization.
-   * @var null|string
-   */
-  protected $title = null;
-
-  /**
-   * A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized.
-   * @var null|string
-   */
-  protected $detail = null;
-
-  /**
-   * An object containing references to the source of the error, optionally including any of the following members:
-   * - pointer: a JSON Pointer [RFC6901] to the associated entity in the request document
-   * [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
-   * - parameter: a string indicating which URI query parameter caused the error.
-   * @var null|ErrorSource
-   */
-  protected $source = null;
-
-  /**
-   * A meta object containing non-standard meta-information about the error.
-   * @var null|string
-   */
-  protected $meta = null;
-
-  /**
-   * A links object containing the following member:
-   * - about: a link that leads to further details about this particular occurrence of the problem.
-   *
-   * @var null|string
-   */
-  protected $links = null;
-
-  public function __construct($message = "", $code = 0, Throwable $previous = null)
+  public function __construct(?string $message = null, ?string $code = null, ?Throwable $previous = null)
   {
     parent::__construct($message, $code, $previous);
 
-    $this->setStatus($code);
-    $this->setTitle($message);
+    $this->error = new Error();
+    $this->error->setDetail($message);
+    $this->error->setCode($code);
   }
 
   /**
-   * @return string|null
+   * @return Error
    */
-  public function getId(): ?string
+  public function getError(): Error
   {
-    return $this->id;
+    return $this->error;
   }
 
-  /**
-   * @param string|null $id
-   */
-  public function setId(?string $id): void
+  public function getStatusCode()
   {
-    $this->id = $id;
+    return $this->error->getStatus();
   }
 
-  /**
-   * @return string|null
-   */
-  public function getStatus(): ?string
+  public function getHeaders()
   {
-    return $this->status;
-  }
-
-  /**
-   * @param string|null $status
-   */
-  public function setStatus(?string $status): void
-  {
-    $this->status = $status;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getTitle(): ?string
-  {
-    return $this->title;
-  }
-
-  /**
-   * @param string|null $title
-   */
-  public function setTitle(?string $title): void
-  {
-    $this->title = $title;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getDetail(): ?string
-  {
-    return $this->detail;
-  }
-
-  /**
-   * @param string|null $detail
-   */
-  public function setDetail(?string $detail): void
-  {
-    $this->detail = $detail;
-  }
-
-  /**
-   * @return array|null
-   */
-  public function getSource(): ?array
-  {
-    return $this->source;
-  }
-
-  /**
-   * @param array|null $source
-   */
-  public function setSource(?array $source): void
-  {
-    $this->source = $source;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getMeta(): ?string
-  {
-    return $this->meta;
-  }
-
-  /**
-   * @param string|null $meta
-   */
-  public function setMeta(?string $meta): void
-  {
-    $this->meta = $meta;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getLinks(): ?string
-  {
-    return $this->links;
-  }
-
-  /**
-   * @param string|null $links
-   */
-  public function setLinks(?string $links): void
-  {
-    $this->links = $links;
-  }
-
-  /**
-   * @return array
-   */
-  public function toArray()
-  {
-    return array_filter([
-      'id' => $this->id,
-      'code' => $this->code,
-      'status' => $this->status,
-      'title' => $this->title,
-      'detail' => $this->detail,
-      'source' => $this->source,
-      'meta' => $this->meta,
-      'links' => $this->links,
-    ]);
+    return ['Content-Type' => 'application/vnd.api+json'];
   }
 }
