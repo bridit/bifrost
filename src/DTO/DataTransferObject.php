@@ -20,7 +20,6 @@ class DataTransferObject
   /**
    * DataTransferObject constructor.
    * @param array $parameters
-   * @throws ReflectionException
    */
   public function __construct(array $parameters = [])
   {
@@ -47,6 +46,15 @@ class DataTransferObject
     }
 
     $this->requestData = $parameters;
+  }
+
+  /**
+   * @param string $key
+   * @return bool
+   */
+  public function filled(string $key): bool
+  {
+    return array_key_exists($key, $this->requestData);
   }
 
   /**
