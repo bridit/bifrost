@@ -5,6 +5,7 @@ namespace Bifrost\Repositories;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Core\Infrastructure\Support\FiltersTranslatableJsonField;
 
 class EntityRepository implements EntityRepositoryContract
 {
@@ -19,6 +20,7 @@ class EntityRepository implements EntityRepositoryContract
   protected $allowedAppends = [];
   protected $exactFilters = [];
   protected $partialFilters = [];
+  protected $translatableJsonFilters = [];
 
   public function __construct()
   {
@@ -42,7 +44,11 @@ class EntityRepository implements EntityRepositoryContract
       return AllowedFilter::scope($item);
     }, $this->allowedScopes);
 
-    $this->allowedFilters = array_merge($exactFilters, $partialFilters, $scopeFilters);
+    $translatableJsonFilters = array_map(function ($item) {
+      return AllowedFilter::custom($item, new FiltersTranslatableJsonField());
+    }, $this->translatableJsonFilters);
+
+    $this->allowedFilters = array_merge($exactFilters, $partialFilters, $scopeFilters, $translatableJsonFilters);
   }
 
   /**
