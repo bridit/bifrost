@@ -145,7 +145,7 @@ class EntityRepository implements EntityRepositoryContract
   /**
    * @inheritDoc
    */
-  public function getQueryBuilder(): QueryBuilder
+  public function getQueryBuilder(?bool $applyCustomFilters = true): QueryBuilder
   {
     $queryBuilder = QueryBuilder::for($this->getEntityClassName())
       ->allowedFields($this->allowedFields)
@@ -166,6 +166,19 @@ class EntityRepository implements EntityRepositoryContract
       $queryBuilder = $queryBuilder->offset((int) $offset);
     }
 
+    if ($applyCustomFilters) {
+      return $this->applyQueryBuilderCustomFilters($queryBuilder);
+    }
+
+    return $queryBuilder;
+  }
+
+  /**
+   * @param QueryBuilder $queryBuilder
+   * @return QueryBuilder
+   */
+  protected function applyQueryBuilderCustomFilters(QueryBuilder $queryBuilder): QueryBuilder
+  {
     return $queryBuilder;
   }
 

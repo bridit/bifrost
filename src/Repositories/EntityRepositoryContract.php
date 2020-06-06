@@ -80,9 +80,10 @@ interface EntityRepositoryContract
   /**
    * Get QueryBuilder
    *
+   * @param null|bool $applyCustomFilters
    * @return QueryBuilder The object.
    */
-  public function getQueryBuilder(): QueryBuilder;
+  public function getQueryBuilder(?bool $applyCustomFilters = true): QueryBuilder;
 
   /**
    * @param int|null $perPage
