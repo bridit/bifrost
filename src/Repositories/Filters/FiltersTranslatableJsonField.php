@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Infrastructure\Support;
+namespace Bifrost\Repositories\Filters;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
