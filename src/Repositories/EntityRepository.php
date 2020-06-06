@@ -10,17 +10,17 @@ use Core\Infrastructure\Support\FiltersTranslatableJsonField;
 class EntityRepository implements EntityRepositoryContract
 {
 
-  protected $entityClassName;
-  protected $defaultSort;
-  protected $allowedIncludes = [];
-  protected $allowedFilters = [];
-  protected $allowedSorts = [];
-  protected $allowedFields = [];
-  protected $allowedScopes = [];
-  protected $allowedAppends = [];
-  protected $exactFilters = [];
-  protected $partialFilters = [];
-  protected $translatableJsonFilters = [];
+  protected string $entityClassName;
+  protected string $defaultSort;
+  protected array $allowedIncludes = [];
+  protected array $allowedFilters = [];
+  protected array $allowedSorts = [];
+  protected array $allowedFields = [];
+  protected array $allowedScopes = [];
+  protected array $allowedAppends = [];
+  protected array $exactFilters = [];
+  protected array $partialFilters = [];
+  protected array $translatableJsonFilters = [];
 
   public function __construct()
   {
