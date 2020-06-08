@@ -21,8 +21,9 @@ class DataTransferObject
    */
   public function __construct(array $parameters = [])
   {
-    $this->requestData = $parameters;
     $this->fillFromArray($parameters);
+
+    $this->requestData = $parameters;
   }
 
   /**
@@ -31,7 +32,7 @@ class DataTransferObject
    */
   public function filled(string $key): bool
   {
-    return array_key_exists($key, $this->requestData ?? []);
+    return array_key_exists($key, $this->requestData);
   }
 
   /**
