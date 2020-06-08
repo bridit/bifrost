@@ -13,7 +13,7 @@ class DataTransferObject
   /**
    * @var array|null
    */
-  public ?array $requestData;
+  public ?array $requestData = [];
 
   /**
    * DataTransferObject constructor.
@@ -31,7 +31,7 @@ class DataTransferObject
    */
   public function filled(string $key): bool
   {
-    return array_key_exists($key, $this->requestData);
+    return array_key_exists($key, $this->requestData ?? []);
   }
 
   /**
