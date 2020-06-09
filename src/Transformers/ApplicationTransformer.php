@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Request;
 
 abstract class ApplicationTransformer
 {
+  /**
+   * Attributes that are allowed for update
+   * @var array|null
+   */
   public ?array $updateAllowed = [];
 
   public abstract function toModel(DataTransferObject $dto): Model;
