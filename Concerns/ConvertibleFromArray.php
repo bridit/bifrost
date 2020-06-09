@@ -35,6 +35,11 @@ trait ConvertibleFromArray
         continue;
       }
 
+      if (method_exists($reflectionProperty->getType()->getName(), 'fromArray') && is_array($value)) {
+        $this->{Str::camel($property)} = call_user_func($reflectionProperty->getType()->getName() . '::fromArray', $value);
+        continue;
+      }
+
       $this->{Str::camel($property)} = $value ?? $default;
     }
   }
