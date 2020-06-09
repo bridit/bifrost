@@ -8,9 +8,17 @@ use Illuminate\Support\Facades\Request;
 
 abstract class ApplicationTransformer
 {
+
+  public ?array $allowedUpdates = [];
+
   public abstract function toModel(DataTransferObject $dto): Model;
 
-  public abstract function prepareForUpdate(Model &$model, DataTransferObject $dto);
+  public function prepareForUpdate(Model &$model, DataTransferObject $dto)
+  {
+    foreach($this->allowedUpdates as $property){
+      call_if($dto->filled($property), fn() => $model->setAttribute(to_snake_case($property), $dto->requestData[to_snake_case($property)]));
+    }
+  }
 
   protected function getResult(array $attributes, Model $entity)
   {
