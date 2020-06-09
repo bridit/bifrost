@@ -2,49 +2,42 @@
 
 namespace Bifrost\DTO;
 
-use ReflectionClass;
-use ReflectionProperty;
-use ReflectionException;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Bifrost\Support\Concerns\ConvertibleFromArray;
 
 class DataTransferObject
 {
 
+  use ConvertibleFromArray;
+
   /**
    * @var array|null
    */
-  public ?array $requestData;
+  public ?array $requestData = [];
 
   /**
    * DataTransferObject constructor.
    * @param array $parameters
-   * @throws ReflectionException
    */
   public function __construct(array $parameters = [])
   {
-    $class = new ReflectionClass(static::class);
-
-    foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty){
-      $property = $reflectionProperty->getName();
-      $value = data_get($parameters, Str::snake($property));
-      $setter = 'set' . ucfirst($reflectionProperty->getName());
-
-      if ($class->hasMethod($setter)) {
-        $this->$setter($value);
-        continue;
-      }
-
-      $this->{Str::camel($property)} = $value;
-    }
+    $this->fillFromArray($parameters);
 
     $this->requestData = $parameters;
   }
 
   /**
+   * @param string $key
+   * @return bool
+   */
+  public function filled(string $key): bool
+  {
+    return array_key_exists($key, $this->requestData);
+  }
+
+  /**
    * @param Request $request
    * @return static
-   * @throws ReflectionException
    */
   public static function fromRequest(Request $request): self
   {
@@ -54,7 +47,6 @@ class DataTransferObject
   /**
    * @param array $params
    * @return static
-   * @throws ReflectionException
    */
   public static function fromArray(array $params): self
   {

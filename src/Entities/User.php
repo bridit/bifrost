@@ -22,4 +22,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     'password', 'remember_token',
   ];
 
+  /**
+   * The user has a Super Administrator Profile (highest profile)?
+   *
+   * @return bool
+   */
+  public function isSuperAdmin(): bool
+  {
+    //
+  }
+
 }

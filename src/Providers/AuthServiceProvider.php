@@ -2,6 +2,7 @@
 
 namespace Bifrost\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -22,6 +23,8 @@ class AuthServiceProvider extends ServiceProvider
    */
   public function boot()
   {
+    Gate::guessPolicyNamesUsing(fn($modelClass) => str_replace('\\Entities\\', '\\Policies\\', $modelClass) . 'Policy');
+
     $this->registerPolicies();
   }
 }

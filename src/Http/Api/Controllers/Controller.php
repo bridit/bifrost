@@ -2,26 +2,29 @@
 
 namespace Bifrost\Http\Api\Controllers;
 
+use Exception;
+use Bifrost\Entities\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Bifrost\Validation\Validator;
 use Bifrost\DTO\DataTransferObject;
-use League\Fractal\TransformerAbstract;
+use Illuminate\Support\Facades\Config;
 use Bifrost\Services\ApplicationService;
-use Bifrost\Validation\ValidatesRequests;
-use Bifrost\Http\Api\JsonApi\JsonApiAware;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Bifrost\Transformers\InterfaceTransformer;
+use League\Fractal\Serializer\JsonApiSerializer;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests as IlluminateValidatesRequests;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Bifrost\Http\Api\JsonApi\Error\Response as JsonApiErrorResponse;
 
 abstract class Controller extends BaseController
 {
   use
     AuthorizesRequests,
     DispatchesJobs,
-    IlluminateValidatesRequests,
-    JsonApiAware,
     ValidatesRequests;
 
   /**
@@ -35,73 +38,251 @@ abstract class Controller extends BaseController
   protected ApplicationService $service;
 
   /**
-   * @var Validator
+   * @var InterfaceTransformer
    */
-  protected Validator $validator;
-
-  /**
-   * @var TransformerAbstract
-   */
-  protected TransformerAbstract $transformer;
+  protected InterfaceTransformer $transformer;
 
   /**
    * Controller constructor.
    * @param ApplicationService $service
-   * @param Validator|null $validator
+   * @param InterfaceTransformer $transformer
    */
-  public function __construct(ApplicationService $service, ?Validator $validator = null)
+  public function __construct(ApplicationService $service, InterfaceTransformer $transformer)
   {
     $this->service = $service;
-    $this->validator = $validator;
+    $this->transformer = $transformer;
   }
 
   /**
-   * @return ApplicationService
-   */
-  public function getService(): ApplicationService
-  {
-    return $this->service;
-  }
-
-    /**
-     * @return TransformerAbstract
-     */
-  public function getTransformer(): TransformerAbstract
-  {
-      return $this->transformer;
-  }
-
-  /**
-   * @return null|Validator
-   */
-  public function getValidator(): ?Validator
-  {
-    return $this->validator;
-  }
-
-  /**
-   * Execute an action on the controller.
+   * Get the map of resource methods to ability names.
    *
-   * @param  string $method
-   * @param  array $parameters
-   * @return \Symfony\Component\HttpFoundation\Response
+   * @return array
    */
-  public function callAction($method, $parameters)
+  protected function resourceAbilityMap()
   {
-    # Check ACL
-    if (!$this->aclValidation($method)) {
-      return $this->errorResponse([$this->getNotAuthorizedError()], 403);
-    }
-
-    # Check Attributes
-    $validation = $this->dataValidation($method, $parameters);
-    if (!blank($validation)) {
-      return $this->errorResponse($validation, 422);
-    }
-
-    # Call Method
-    return call_user_func_array([$this, $method], $parameters);
+    return [
+      'index' => 'viewAny',
+      'show' => 'view',
+      'create' => 'create',
+      'store' => 'create',
+      'edit' => 'update',
+      'update' => 'update',
+      'trash' => 'trash',
+      'trashMultiple' => 'trashMultiple',
+      'untrash' => 'untrash',
+      'untrashMultiple' => 'untrashMultiple',
+      'destroy' => 'delete',
+      'destroyMultiple' => 'deleteMultiple',
+    ];
   }
 
+  /**
+   * Get the list of resource methods which do not have model parameters.
+   *
+   * @return array
+   */
+  protected function resourceMethodsWithoutModels()
+  {
+    return ['index', 'create', 'store', 'trashMultiple', 'untrashMultiple', 'destroyMultiple'];
+  }
+
+  /**
+   * @param $request
+   * @return JsonResponse
+   */
+  protected function findPaginated($request)
+  {
+    $paginated = $this->service->paginate(
+      $request->input('page.size', $request->input('page.limit', null)),
+      $request->input('page.number', $request->input('page.offset', null)),
+      ['*']
+    );
+
+    return $this->paginate($paginated);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   */
+  protected function executeShow(Model $model)
+  {
+    return $this->response($model, 200);
+  }
+
+  /**
+   * @param DataTransferObject $dto
+   * @return JsonResponse
+   * @throws ReflectionException
+   */
+  protected function executeStore(DataTransferObject $dto)
+  {
+    $model = $this->service->create($dto);
+
+    if(blank($model)){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be created. Please try again later.', 400)]);
+    }
+
+    return $this->response($model, 201);
+  }
+
+  /**
+   * @param Model $model
+   * @param DataTransferObject $dto
+   * @return JsonResponse
+   * @throws ReflectionException
+   */
+  protected function executeUpdate(Model $model, DataTransferObject $dto)
+  {
+    $model = $this->service->update($model, $dto);
+
+    if(blank($model)){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be updated. Please try again later.', 400)]);
+    }
+
+    return $this->response($model, 201);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeTrash(Model $model)
+  {
+    if($this->service->trash($model) === false){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be trashed. Please try again later.', 400)]);
+    }
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeTrashMultiple(Request $request)
+  {
+    $this->service->trashMultiple($request->get('id', []));
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   */
+  protected function executeUntrash(Model $model)
+  {
+    if($this->service->untrash($model) === false){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be untrashed. Please try again later.', 400)]);
+    }
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeUntrashMultiple(Request $request)
+  {
+    $this->service->untrashMultiple($request->get('id', []));
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Model $model
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeDestroy(Model $model)
+  {
+    if($this->service->delete($model) === false){
+      return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be deleted. Please try again later.', 400)]);
+    }
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   * @throws Exception
+   */
+  protected function executeDestroyMultiple(Request $request)
+  {
+    $this->service->destroyMultiple($request->get('id', []));
+
+    return $this->response(null, 204);
+  }
+
+  /**
+   * @return mixed
+   */
+  protected function getApiSerializer()
+  {
+    $class = Config::get('bifrost.http.api.serializer', JsonApiSerializer::class);
+
+    return new $class();
+  }
+
+  /**
+   * @param $data
+   * @param int|null $defaultHttpCode
+   * @param array $headers
+   * @return JsonResponse
+   */
+  protected function response($data, ?int $defaultHttpCode = 200, array $headers = [])
+  {
+    return fractal($data, $this->transformer)
+      ->serializeWith($this->getApiSerializer())
+      ->withResourceName(class_basename($this->service->getEntityClassName()))
+      ->respond($defaultHttpCode, $this->getHeaders($headers));
+  }
+
+  /**
+   * @param LengthAwarePaginator $data
+   * @param int|null $defaultHttpCode
+   * @param array $headers
+   * @return JsonResponse
+   */
+  protected function paginate(LengthAwarePaginator $data, ?int $defaultHttpCode = 200, array $headers = [])
+  {
+    return fractal($data, $this->transformer)
+      ->serializeWith($this->getApiSerializer())
+      ->withResourceName(class_basename($this->service->getEntityClassName()))
+      ->paginateWith(new IlluminatePaginatorAdapter($data))
+      ->respond($defaultHttpCode, $this->getHeaders($headers));
+  }
+
+  /**
+   * @param $headers
+   * @return array
+   */
+  protected function getHeaders($headers)
+  {
+    if (Config::get('bifrost.http.api.serializer', JsonApiSerializer::class) !== JsonApiSerializer::class) {
+      return $headers;
+    }
+
+    unset($headers['content-type']);
+
+    return array_merge($headers, ['Content-Type' => 'application/vnd.api+json']);
+  }
+
+  /**
+   * @param array $errors
+   * @param array $headers
+   * @return JsonResponse
+   * @deprecated
+   */
+  protected function errorResponse(array $errors, array $headers = [])
+  {
+    return (new JsonApiErrorResponse($errors, $this->getHeaders($headers)))->json();
+  }
 
 }

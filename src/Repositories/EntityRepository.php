@@ -5,20 +5,22 @@ namespace Bifrost\Repositories;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Bifrost\Repositories\Filters\FiltersTranslatableJsonField;
 
 class EntityRepository implements EntityRepositoryContract
 {
 
-  protected $entityClassName;
-  protected $defaultSort;
-  protected $allowedIncludes = [];
-  protected $allowedFilters = [];
-  protected $allowedSorts = [];
-  protected $allowedFields = [];
-  protected $allowedScopes = [];
-  protected $allowedAppends = [];
-  protected $exactFilters = [];
-  protected $partialFilters = [];
+  protected string $entityClassName;
+  protected string $defaultSort;
+  protected array $allowedIncludes = [];
+  protected array $allowedFilters = [];
+  protected array $allowedSorts = [];
+  protected array $allowedFields = [];
+  protected array $allowedScopes = [];
+  protected array $allowedAppends = [];
+  protected array $exactFilters = [];
+  protected array $partialFilters = [];
+  protected array $translatableJsonFilters = [];
 
   public function __construct()
   {
@@ -42,7 +44,11 @@ class EntityRepository implements EntityRepositoryContract
       return AllowedFilter::scope($item);
     }, $this->allowedScopes);
 
-    $this->allowedFilters = array_merge($exactFilters, $partialFilters, $scopeFilters);
+    $translatableJsonFilters = array_map(function ($item) {
+      return AllowedFilter::custom($item, new FiltersTranslatableJsonField());
+    }, $this->translatableJsonFilters);
+
+    $this->allowedFilters = array_merge($exactFilters, $partialFilters, $scopeFilters, $translatableJsonFilters);
   }
 
   /**
@@ -82,7 +88,7 @@ class EntityRepository implements EntityRepositoryContract
     }
 
     if (blank($orderBy) && !blank($this->defaultSort)) {
-      $orderBy = substr($this->defaultSort, 0, 1) === '-'
+      $orderBy = $this->defaultSort[0] !== '-'
         ? [$this->defaultSort => 'asc']
         : [substr($this->defaultSort, 1, strlen($this->defaultSort)) => 'desc'];
     }
@@ -108,7 +114,7 @@ class EntityRepository implements EntityRepositoryContract
    */
   public function findOneBy(array $criteria, ?array $orderBy = [])
   {
-    $this->findBy($criteria, $orderBy, 1);
+    return $this->findBy($criteria, $orderBy, 1)->first();
   }
 
   /**
@@ -145,7 +151,7 @@ class EntityRepository implements EntityRepositoryContract
   /**
    * @inheritDoc
    */
-  public function getQueryBuilder(): QueryBuilder
+  public function getQueryBuilder(?bool $applyCustomFilters = true): QueryBuilder
   {
     $queryBuilder = QueryBuilder::for($this->getEntityClassName())
       ->allowedFields($this->allowedFields)
@@ -166,6 +172,19 @@ class EntityRepository implements EntityRepositoryContract
       $queryBuilder = $queryBuilder->offset((int) $offset);
     }
 
+    if ($applyCustomFilters) {
+      return $this->applyQueryBuilderCustomFilters($queryBuilder);
+    }
+
+    return $queryBuilder;
+  }
+
+  /**
+   * @param QueryBuilder $queryBuilder
+   * @return QueryBuilder
+   */
+  protected function applyQueryBuilderCustomFilters(QueryBuilder $queryBuilder): QueryBuilder
+  {
     return $queryBuilder;
   }
 

@@ -6,7 +6,7 @@ use Bifrost\Entities\Model;
 use Bifrost\DTO\DataTransferObject;
 use Illuminate\Support\Facades\Request;
 
-abstract class Transformer
+abstract class ApplicationTransformer
 {
   public abstract function toModel(DataTransferObject $dto): Model;
 

@@ -2,9 +2,9 @@
 
 namespace Bifrost\Repositories;
 
-use Illuminate\Support\Collection;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface EntityRepositoryContract
@@ -80,9 +80,10 @@ interface EntityRepositoryContract
   /**
    * Get QueryBuilder
    *
+   * @param null|bool $applyCustomFilters
    * @return QueryBuilder The object.
    */
-  public function getQueryBuilder(): QueryBuilder;
+  public function getQueryBuilder(?bool $applyCustomFilters = true): QueryBuilder;
 
   /**
    * @param int|null $perPage

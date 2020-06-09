@@ -2,10 +2,11 @@
 
 namespace Bifrost\Services;
 
+use Exception;
 use Bifrost\Entities\Model;
-use Illuminate\Support\Collection;
 use Bifrost\DTO\DataTransferObject;
-use Bifrost\Transformers\Transformer;
+use Illuminate\Database\Eloquent\Collection;
+use Bifrost\Transformers\ApplicationTransformer;
 use Bifrost\Repositories\EntityRepositoryContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -15,26 +16,26 @@ abstract class ApplicationService
   /**
    * @var DomainService|null
    */
-  private ?DomainService $service;
+  protected ?DomainService $service;
 
   /**
-   * @var Transformer|null
+   * @var ApplicationTransformer|null
    */
-  private ?Transformer $transformer;
+  protected ?ApplicationTransformer $transformer;
 
   /**
    * @var EntityRepositoryContract|null
    */
-  private EntityRepositoryContract $repository;
+  protected EntityRepositoryContract $repository;
 
   /**
    * ApplicationService constructor.
    *
    * @param DomainService|null $service
-   * @param Transformer|null $transformer
+   * @param ApplicationTransformer|null $transformer
    * @param null|EntityRepositoryContract $repository
    */
-  public function __construct(?DomainService $service = null, ?Transformer $transformer = null, ?EntityRepositoryContract $repository = null)
+  public function __construct(?DomainService $service = null, ?ApplicationTransformer $transformer = null, ?EntityRepositoryContract $repository = null)
   {
     $this->service = $service;
     $this->repository = $repository;
@@ -54,14 +55,11 @@ abstract class ApplicationService
    *
    * @param mixed $id The identifier.
    *
-   * @return \Illuminate\Database\Eloquent\Model|Collection|null The object.
+   * @return Model|Collection|null The object.
    */
-
   public function find($id)
   {
-    $result = $this->repository->find($id);
-
-    return $this->transformer->transform($result);
+    return $this->repository->find($id);
   }
 
   /**
@@ -71,9 +69,7 @@ abstract class ApplicationService
    */
   public function findAll()
   {
-    $result = $this->repository->findAll();
-
-    return $this->transformer->transform($result);
+    return $this->repository->findAll();
   }
 
   /**
@@ -131,7 +127,7 @@ abstract class ApplicationService
   /**
    * @return Model|null
    */
-  public function findOneWithQueryBuilder()
+  public function findOneWithQueryBuilder(): ?Model
   {
     return $this->repository->findOneWithQueryBuilder();
   }
@@ -147,26 +143,25 @@ abstract class ApplicationService
     return $this->repository->paginate($perPage, $pageNumber, $columns);
   }
 
-
-    /**
-     * @param DataTransferObject $dto
-     * @return Model|null
-     */
-  public function createOrUpdate(DataTransferObject $dto): ?Model
+  /**
+   * @param DataTransferObject $dto
+   * @return Model
+   */
+  public function createOrUpdate(DataTransferObject $dto): Model
   {
     $model = $this->find(optional($dto)->id);
 
-    if ($model === null) {
-      $this->create($dto);
+    if (blank($model)) {
+      return $this->create($dto);
     }
 
-    return $this->updateModel($model, $dto);
+    return $this->update($model, $dto);
   }
 
-    /**
-     * @param DataTransferObject $dto
-     * @return Model|null
-     */
+  /**
+   * @param DataTransferObject $dto
+   * @return null|Model
+   */
   public function create(DataTransferObject $dto): ?Model
   {
     $model = $this->transformer->toModel($dto);
@@ -174,65 +169,103 @@ abstract class ApplicationService
     return $this->service->create($model);
   }
 
-    /**
-     * @param DataTransferObject $dto
-     * @return Model|null
-     */
-  public function update(DataTransferObject $dto): ?Model
-  {
-    $model = $this->find(optional($dto)->id);
-
-    if ($model === null) {
-      return null;
-    }
-
-    return $this->updateModel($model, $dto);
-  }
-
-    /**
-     * @param string $id
-     * @return bool
-     */
-  public function delete(string $id): bool
-  {
-    $model = $this->find($id);
-
-    if ($model === null) {
-      return false;
-    }
-
-    $this->service->delete($model);
-
-    return true;
-  }
-
   /**
-   * @param string $id
-   * @return bool
+   * @param Model $model
+   * @param DataTransferObject $dto
+   * @return null|Model
    */
-  public function restore(string $id): bool
-  {
-    $model = $this->find($id);
-
-    if ($model === null) {
-      return false;
-    }
-
-    $this->service->restore($model);
-
-    return true;
-  }
-
-    /**
-     * @param Model $model
-     * @param DataTransferObject $dto
-     * @return Model
-     */
-  protected function updateModel(Model $model, DataTransferObject $dto): Model
+  public function update(Model $model, DataTransferObject $dto): ?Model
   {
     $this->transformer->prepareForUpdate($model, $dto);
 
     return $this->service->update($model);
+  }
+
+  /**
+   * Get registries from trash.
+   *
+   * @param array|null $orderBy
+   * @param null $limit
+   * @param null $offset
+   * @return null|Collection
+   */
+  public function trashed(?array $orderBy = null, $limit = null, $offset = null): ?Collection
+  {
+    return $this->repository->findBy(['active' => false], $orderBy, $limit, $offset);
+  }
+
+  /**
+   * Set a registry as inactive.
+   *
+   * @param Model $model
+   * @return bool
+   * @throws Exception
+   */
+  public function trash(Model $model): bool
+  {
+    return $this->service->trash($model);
+  }
+
+  /**
+   * Set multiple registries as inactive.
+   *
+   * @param iterable $ids
+   * @return void
+   * @throws Exception
+   */
+  public function trashMultiple(iterable $ids): void
+  {
+    $models = $this->repository->find($ids);
+
+    $this->service->trashMultiple($models);
+  }
+
+  /**
+   * Restore an inactive registry.
+   *
+   * @param Model $model
+   * @return bool
+   */
+  public function untrash(Model $model): bool
+  {
+    return $this->service->untrash($model);
+  }
+
+  /**
+   * Restore multiple inactive registries.
+   *
+   * @param iterable $ids
+   * @return void
+   */
+  public function untrashMultiple(iterable $ids): void
+  {
+    $models = $this->repository->find($ids);
+
+    $this->service->untrashMultiple($models);
+  }
+
+  /**
+   * @param Model $model
+   * @return bool
+   * @throws Exception
+   */
+  public function delete(Model $model): bool
+  {
+    return $this->service->delete($model);
+  }
+
+  /**
+   * Remove multiple registries from database.
+   *
+   * @param iterable $ids
+   * @return void
+   * @throws Exception
+   */
+  public function deleteMultiple(iterable $ids): void
+  {
+    $models = $this->repository->find($ids);
+
+    $this->service->deleteMultiple($models);
   }
 
 }

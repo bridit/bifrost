@@ -2,11 +2,21 @@
 
 namespace Bifrost\Providers;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
+
+  /**
+   * The path to the "home" route for your application.
+   *
+   * @var string
+   */
+  public const HOME = '/home';
 
   /**
    * App modules base namespace.
@@ -39,7 +49,7 @@ class RouteServiceProvider extends ServiceProvider
   /**
    * Create a new service provider instance.
    *
-   * @param  \Illuminate\Contracts\Foundation\Application  $app
+   * @param  Application  $app
    * @return void
    */
   public function __construct($app)
@@ -59,6 +69,38 @@ class RouteServiceProvider extends ServiceProvider
    */
   public function boot()
   {
+    Route::macro('fullResource', function ($name, $controller, array $options = []) {
+      $name = substr($name, 0, 1) === '/' ? substr($name, 1, strlen($name)) : $name;
+      $modelName = array_map(fn($item) => Str::singular($item), explode('-', $name));
+      $modelName = Str::camel(implode('_', $modelName));
+
+      Arr::set($options, "parameters.$name", $modelName);
+
+      Route::get('/' . $name . '/trashed', $controller . '@trashed')->name($name . '.trashed');
+      Route::put('/' . $name . '/{' . $modelName . '}/trash', $controller . '@trash')->name($name . '.trash');
+      Route::put('/' . $name . '/trash', $controller . '@trashMultiple')->name($name . '.trashMultiple');
+      Route::put('/' . $name . '/{' . $modelName . '}/untrash', $controller . '@untrash')->name($name . '.untrash');
+      Route::put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name($name . '.untrashMultiple');
+      Route::delete('/' . $name, $controller . '@destroyMultiple')->name($name . '.destroyMultiple');
+      Route::resource('/' . $name, $controller, $options);
+    });
+
+    Route::macro('fullApiResource', function ($name, $controller, array $options = []) {
+      $name = substr($name, 0, 1) === '/' ? substr($name, 1, strlen($name)) : $name;
+      $modelName = array_map(fn($item) => Str::singular($item), explode('-', $name));
+      $modelName = Str::camel(implode('_', $modelName));
+
+      Arr::set($options, "parameters.$name", $modelName);
+
+      Route::get('/' . $name . '/trashed', $controller . '@trashed')->name($name . '.trashed');
+      Route::put('/' . $name . '/{' . $modelName . '}/trash', $controller . '@trash')->name($name . '.trash');
+      Route::put('/' . $name . '/trash', $controller . '@trashMultiple')->name($name . '.trashMultiple');
+      Route::put('/' . $name . '/{' . $modelName . '}/untrash', $controller . '@untrash')->name($name . '.untrash');
+      Route::put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name($name . '.untrashMultiple');
+      Route::delete('/' . $name, $controller . '@destroyMultiple')->name($name . '.destroyMultiple');
+      Route::apiResource('/' . $name, $controller, $options);
+    });
+
     parent::boot();
   }
 
@@ -120,7 +162,6 @@ class RouteServiceProvider extends ServiceProvider
         }
       }
     }
-
   }
 
 }

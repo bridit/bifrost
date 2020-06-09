@@ -2,6 +2,10 @@
 
 namespace Bifrost\Providers;
 
+use Illuminate\Support\Facades\Config;
+use League\Fractal\Serializer\JsonApiSerializer;
+use Illuminate\Validation\Factory as ValidationFactory;
+
 class BifrostServiceProvider extends ServiceProvider
 {
   /**
@@ -28,6 +32,20 @@ class BifrostServiceProvider extends ServiceProvider
     $this->mergeConfigFrom(
       __DIR__ . '/../../config/bifrost.php', 'bifrost'
     );
+
+    $this->app->register(Config::get('bifrost.app.service_provider', AppServiceProvider::class));
+    $this->app->register(Config::get('bifrost.auth.service_provider', AuthServiceProvider::class));
+    $this->app->register(Config::get('bifrost.http.service_provider', RouteServiceProvider::class));
+    $this->app->register(Config::get('bifrost.event.service_provider', EventServiceProvider::class));
+//    $this->app->register(Config::get('bifrost.broadcast.service_provider', BroadcastServiceProvider::class));
+    $this->app->register(CorsServiceProvider::class);
+    $this->app->register(\Webpatser\Uuid\UuidServiceProvider::class);
+
+    if (Config::get('bifrost.http.api.serializer', JsonApiSerializer::class) === JsonApiSerializer::class) {
+      $this->app->extend(ValidationFactory::class, function ($service, $app) {
+        return new \Bifrost\Validation\Factory($service->getTranslator(), $app);
+      });
+    }
   }
 
   protected function loadModulesAdditional()
