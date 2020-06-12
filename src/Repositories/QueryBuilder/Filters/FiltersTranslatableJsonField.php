@@ -1,6 +1,6 @@
 <?php
 
-namespace Bifrost\Repositories\Filters;
+namespace Bifrost\Repositories\QueryBuilder\Filters;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
