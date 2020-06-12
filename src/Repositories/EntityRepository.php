@@ -5,7 +5,7 @@ namespace Bifrost\Repositories;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Bifrost\Repositories\Filters\FiltersTranslatableJsonField;
+use Bifrost\Repositories\QueryBuilder\Filters\FiltersTranslatableJsonField;
 
 class EntityRepository implements EntityRepositoryContract
 {
