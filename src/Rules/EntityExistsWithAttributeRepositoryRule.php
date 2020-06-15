@@ -4,7 +4,7 @@ namespace Bifrost\Rules;
 
 use Bifrost\Repositories\EntityRepository;
 
-abstract class AttributeExistsRule extends Rule
+abstract class EntityExistsWithAttributeRepositoryRule extends RepositoryRule
 {
     /**
      * @inheritDoc
