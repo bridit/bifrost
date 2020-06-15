@@ -19,6 +19,6 @@ abstract class AttributeDontExistsRule extends Rule
      */
     public function message()
     {
-        return ucfirst(':attribute') . ' \':value\' not found.';
+        return ucfirst(':attribute') . ' \':value\' already exists.';
     }
 }
