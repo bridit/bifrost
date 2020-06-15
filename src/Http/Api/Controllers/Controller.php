@@ -248,7 +248,7 @@ abstract class Controller extends BaseController
 
   protected function arrayResponse($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
-    return new Response(json_encode($data), $defaultHttpCode, $this->getHeaders($headers));
+    return new JsonResponse($data, $defaultHttpCode, $this->getHeaders($headers));
   }
 
   /**
