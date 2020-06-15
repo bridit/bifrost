@@ -4,6 +4,7 @@ namespace Bifrost\Http\Api\Controllers;
 
 use Exception;
 use Bifrost\Entities\Model;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -230,14 +231,18 @@ abstract class Controller extends BaseController
     return new $class();
   }
 
-  /**
-   * @param $data
-   * @param int|null $defaultHttpCode
-   * @param array $headers
-   * @return JsonResponse
-   */
+    /**
+     * @param $data
+     * @param int|null $defaultHttpCode
+     * @param array $headers
+     * @return JsonResponse|Response
+     */
   protected function response($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
+    if(gettype($data) == 'array'){
+      return new Response(json_encode($data), $defaultHttpCode, $this->getHeaders($headers));
+    }
+
     return fractal($data, $this->transformer)
       ->serializeWith($this->getApiSerializer())
       ->withResourceName(class_basename($this->service->getEntityClassName()))

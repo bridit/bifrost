@@ -27,7 +27,8 @@
     "spatie/laravel-query-builder": "^2.8",
     "spatie/laravel-responsecache": "^6.6",
     "spatie/laravel-schemaless-attributes": "^1.7",
-    "webpatser/laravel-uuid": "^3.0"
+    "webpatser/laravel-uuid": "^3.0",
+    "ext-json": "*"
   },
   "require-dev": {
     "facade/ignition": "^2.0",
