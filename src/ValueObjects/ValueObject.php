@@ -16,7 +16,7 @@ class ValueObject
    */
   public function __construct(?array $parameters = [])
   {
-    $this->fillFromArray($parameters);
+    $this->fillFromArray($parameters, false);
   }
 
   public function __toString()
