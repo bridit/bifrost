@@ -4,6 +4,7 @@ namespace Bifrost\Providers;
 
 use Illuminate\Support\Facades\Config;
 use League\Fractal\Serializer\JsonApiSerializer;
+use Bifrost\Console\Commands\ProjectPermissionsCommand;
 use Illuminate\Validation\Factory as ValidationFactory;
 
 class BifrostServiceProvider extends ServiceProvider
@@ -46,6 +47,10 @@ class BifrostServiceProvider extends ServiceProvider
         return new \Bifrost\Validation\Factory($service->getTranslator(), $app);
       });
     }
+
+    $this->commands([
+      ProjectPermissionsCommand::class,
+    ]);
   }
 
   protected function loadModulesAdditional()
