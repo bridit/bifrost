@@ -65,7 +65,7 @@ class Kernel extends ConsoleKernel
     foreach ($modules as $module)
     {
       $this->load($bundleBasePath . '/' . $module . '/Interfaces/Console/Commands');
-      require $bundleBasePath . '/Interfaces/Console/console.php';
+      require $bundleBasePath . '/' . $module . '/Interfaces/Console/console.php';
     }
   }
 }
