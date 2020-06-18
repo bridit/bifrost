@@ -2,6 +2,10 @@
 
 namespace Bifrost\Validation;
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Validation\DatabasePresenceVerifier;
+
 class Validator extends \Illuminate\Validation\Validator
 {
 
@@ -11,6 +15,13 @@ class Validator extends \Illuminate\Validation\Validator
    * @var array
    */
   protected $titles = [];
+
+  public function __construct(Translator $translator, array $data, array $rules, array $messages = [], array $customAttributes = [])
+  {
+    parent::__construct($translator, $data, $rules, $messages, $customAttributes);
+
+    $this->setPresenceVerifier(App::make(DatabasePresenceVerifier::class));
+  }
 
   /**
    * @return array
