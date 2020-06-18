@@ -13,8 +13,9 @@ trait ConvertibleFromArray
   /**
    * Fill object attributes from given associative array
    * @param array $parameters
+   * @param bool $camelCase = true
    */
-  protected function fillFromArray(array $parameters = [])
+  protected function fillFromArray(array $parameters = [], bool $camelCase = true)
   {
     $class = new ReflectionClass(static::class);
     $defaultProperties = $class->getDefaultProperties();
@@ -22,7 +23,7 @@ trait ConvertibleFromArray
     foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty){
       $property = $reflectionProperty->getName();
       $value = data_get($parameters, Str::snake($property));
-      $default = data_get($defaultProperties, Str::camel($property));
+      $default = data_get($defaultProperties, $this->getPropertyName($property, $camelCase));
       $setter = 'set' . ucfirst($reflectionProperty->getName());
 
       if ($class->hasMethod($setter)) {
@@ -31,17 +32,22 @@ trait ConvertibleFromArray
       }
 
       if ($reflectionProperty->getType()->getName() === 'Carbon\Carbon' && !blank($value ?? $default)) {
-        $this->{Str::camel($property)} = Carbon::parse($value ?? $default);
+        $this->{$this->getPropertyName($property, $camelCase)} = Carbon::parse($value ?? $default);
         continue;
       }
 
       if (method_exists($reflectionProperty->getType()->getName(), 'fromArray') && is_array($value)) {
-        $this->{Str::camel($property)} = call_user_func($reflectionProperty->getType()->getName() . '::fromArray', $value);
+        $this->{$this->getPropertyName($property, $camelCase)} = call_user_func($reflectionProperty->getType()->getName() . '::fromArray', $value);
         continue;
       }
 
-      $this->{Str::camel($property)} = $value ?? $default;
+      $this->{$this->getPropertyName($property, $camelCase)} = $value ?? $default;
     }
+  }
+
+  private function getPropertyName(string $name, bool $camelCase)
+  {
+      return $camelCase ? Str::camel($name) : Str::snake($name);
   }
 
 }
