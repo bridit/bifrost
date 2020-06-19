@@ -45,9 +45,9 @@ trait ConvertibleFromArray
     }
   }
 
-  private function getPropertyName(string $name, bool $camelCase)
+  private function getPropertyName(string $property, bool $camelCase)
   {
-      return $camelCase ? Str::camel($name) : Str::snake($name);
+      return $camelCase ? Str::camel($property) : Str::snake($property);
   }
 
 }
