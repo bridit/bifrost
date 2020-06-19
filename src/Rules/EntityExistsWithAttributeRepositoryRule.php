@@ -6,6 +6,8 @@ use Bifrost\Repositories\EntityRepository;
 
 abstract class EntityExistsWithAttributeRepositoryRule extends RepositoryRule
 {
+    protected string $entityName = 'Entity';
+
     /**
      * @inheritDoc
      */
@@ -19,6 +21,6 @@ abstract class EntityExistsWithAttributeRepositoryRule extends RepositoryRule
      */
     public function message()
     {
-        return ucfirst(':attribute') . ' \':value\' not found.';
+        return $this->entityName . ': ' . ucfirst(':attribute') . ' \':value\' not found.';
     }
 }

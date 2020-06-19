@@ -6,6 +6,8 @@ use Bifrost\Repositories\EntityRepository;
 
 abstract class EntityDontExistsWithAttributeRepositoryRule extends RepositoryRule
 {
+    protected string $entityName = 'Entity';
+
     /**
      * @inheritDoc
      */
@@ -19,6 +21,6 @@ abstract class EntityDontExistsWithAttributeRepositoryRule extends RepositoryRul
      */
     public function message()
     {
-        return ucfirst(':attribute') . ' \':value\' already exists.';
+        return $this->entityName . ': ' . ucfirst(':attribute') . ' \':value\' already exists.';
     }
 }

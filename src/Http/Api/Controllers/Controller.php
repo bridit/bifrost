@@ -236,7 +236,7 @@ abstract class Controller extends BaseController
      * @param $data
      * @param int|null $defaultHttpCode
      * @param array $headers
-     * @return JsonResponse|Response
+     * @return JsonResponse
      */
   protected function response($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
@@ -246,6 +246,12 @@ abstract class Controller extends BaseController
       ->respond($defaultHttpCode, $this->getHeaders($headers));
   }
 
+    /**
+     * @param $data
+     * @param int|null $defaultHttpCode
+     * @param array $headers
+     * @return JsonResponse
+     */
   protected function arrayResponse($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
     return new JsonResponse($data, $defaultHttpCode, $this->getHeaders($headers));
