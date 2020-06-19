@@ -18,10 +18,11 @@ class DataTransferObject
   /**
    * DataTransferObject constructor.
    * @param array $parameters
+   * @param bool $camelCase
    */
-  public function __construct(array $parameters = [])
+  public function __construct(array $parameters = [], bool $camelCase = true)
   {
-    $this->fillFromArray($parameters);
+    $this->fillFromArray($parameters, $camelCase);
 
     $this->requestData = $parameters;
   }
@@ -37,20 +38,22 @@ class DataTransferObject
 
   /**
    * @param Request $request
+   * @param bool $camelCase
    * @return static
    */
-  public static function fromRequest(Request $request): self
+  public static function fromRequest(Request $request, bool $camelCase = true): self
   {
-    return new static($request->all());
+    return new static($request->all(), $camelCase);
   }
 
   /**
    * @param array $params
+   * @param bool $camelCase
    * @return static
    */
-  public static function fromArray(array $params): self
+  public static function fromArray(array $params, bool $camelCase = true): self
   {
-    return new static($params);
+    return new static($params, $camelCase);
   }
 
 }

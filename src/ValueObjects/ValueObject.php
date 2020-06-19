@@ -10,13 +10,14 @@ class ValueObject
 
   use ConvertibleFromArray, Arrayable;
 
-  /**
-   * ValueObject constructor.
-   * @param null|array $parameters
-   */
-  public function __construct(?array $parameters = [])
+    /**
+     * ValueObject constructor.
+     * @param array|null $parameters
+     * @param bool $camelCase
+     */
+  public function __construct(?array $parameters = [], bool $camelCase = false)
   {
-    $this->fillFromArray($parameters, false);
+    $this->fillFromArray($parameters, $camelCase);
   }
 
   public function __toString()
@@ -24,13 +25,14 @@ class ValueObject
     return json_encode($this->toArray());
   }
 
-  /**
-   * @param array $params
-   * @return static
-   */
-  public static function fromArray(array $params): self
+    /**
+     * @param array $params
+     * @param bool $camelCase
+     * @return static
+     */
+  public static function fromArray(array $params, bool $camelCase = false): self
   {
-    return new static($params);
+    return new static($params, $camelCase);
   }
 
 }
