@@ -16,6 +16,7 @@
   ],
   "require": {
     "php": "^7.4",
+    "ext-json": "*",
     "asm89/stack-cors": "^1.3",
     "bridit/bifrost-database": "^1.2",
     "bridit/laravel-tasks": "^1.2",

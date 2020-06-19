@@ -13,6 +13,7 @@ trait ConvertibleFromArray
   /**
    * Fill object attributes from given associative array
    * @param array $parameters
+   * @param bool $camelCase = true
    */
   protected function fillFromArray(array $parameters = [], bool $camelCase = true)
   {
