@@ -16,6 +16,7 @@
   ],
   "require": {
     "php": "^7.4",
+    "ext-json": "*",
     "asm89/stack-cors": "^1.3",
     "bridit/bifrost-database": "^1.2",
     "bridit/laravel-tasks": "^1.2",
@@ -27,8 +28,7 @@
     "spatie/laravel-query-builder": "^2.8",
     "spatie/laravel-responsecache": "^6.6",
     "spatie/laravel-schemaless-attributes": "^1.7",
-    "webpatser/laravel-uuid": "^3.0",
-    "ext-json": "*"
+    "webpatser/laravel-uuid": "^3.0"
   },
   "require-dev": {
     "facade/ignition": "^2.0",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bifrost\Rules;
+namespace Bifrost\Validation\Rules;
 
 use \Illuminate\Contracts\Validation\Rule as BaseRule;
 

@@ -121,7 +121,7 @@ abstract class Controller extends BaseController
   {
     $model = $this->service->create($dto);
 
-    if(blank($model)){
+    if (blank($model)) {
       return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be created. Please try again later.', 400)]);
     }
 
@@ -138,7 +138,7 @@ abstract class Controller extends BaseController
   {
     $model = $this->service->update($model, $dto);
 
-    if(blank($model)){
+    if (blank($model)) {
       return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be updated. Please try again later.', 400)]);
     }
 
@@ -152,7 +152,7 @@ abstract class Controller extends BaseController
    */
   protected function executeTrash(Model $model)
   {
-    if($this->service->trash($model) === false){
+    if ($this->service->trash($model) === false) {
       return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be trashed. Please try again later.', 400)]);
     }
 
@@ -177,7 +177,7 @@ abstract class Controller extends BaseController
    */
   protected function executeUntrash(Model $model)
   {
-    if($this->service->untrash($model) === false){
+    if ($this->service->untrash($model) === false) {
       return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be untrashed. Please try again later.', 400)]);
     }
 
@@ -203,7 +203,7 @@ abstract class Controller extends BaseController
    */
   protected function executeDestroy(Model $model)
   {
-    if($this->service->delete($model) === false){
+    if ($this->service->delete($model) === false) {
       return $this->errorResponse([new JsonApiException(class_basename($model) . ' could not be deleted. Please try again later.', 400)]);
     }
 
@@ -232,12 +232,12 @@ abstract class Controller extends BaseController
     return new $class();
   }
 
-    /**
-     * @param $data
-     * @param int|null $defaultHttpCode
-     * @param array $headers
-     * @return JsonResponse
-     */
+  /**
+   * @param $data
+   * @param int|null $defaultHttpCode
+   * @param array $headers
+   * @return JsonResponse
+   */
   protected function response($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
     return fractal($data, $this->transformer)
@@ -246,12 +246,12 @@ abstract class Controller extends BaseController
       ->respond($defaultHttpCode, $this->getHeaders($headers));
   }
 
-    /**
-     * @param $data
-     * @param int|null $defaultHttpCode
-     * @param array $headers
-     * @return JsonResponse
-     */
+  /**
+   * @param $data
+   * @param int|null $defaultHttpCode
+   * @param array $headers
+   * @return JsonResponse
+   */
   protected function arrayResponse($data, ?int $defaultHttpCode = 200, array $headers = [])
   {
     return new JsonResponse($data, $defaultHttpCode, $this->getHeaders($headers));
