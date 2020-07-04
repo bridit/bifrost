@@ -17,10 +17,10 @@ class DataTransferObject
 
   /**
    * DataTransferObject constructor.
-   * @param array $parameters
-   * @param bool $camelCase
+   * @param null|array $parameters
+   * @param null|bool $camelCase
    */
-  public function __construct(array $parameters = [], bool $camelCase = true)
+  public function __construct(?array $parameters = [], ?bool $camelCase = true)
   {
     $this->fillFromArray($parameters, $camelCase);
 

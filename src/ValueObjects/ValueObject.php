@@ -12,10 +12,10 @@ class ValueObject
 
     /**
      * ValueObject constructor.
-     * @param array|null $parameters
-     * @param bool $camelCase
+     * @param null|array $parameters
+     * @param null|bool $camelCase
      */
-  public function __construct(?array $parameters = [], bool $camelCase = false)
+  public function __construct(?array $parameters = [], ?bool $camelCase = false)
   {
     $this->fillFromArray($parameters, $camelCase);
   }
