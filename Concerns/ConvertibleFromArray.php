@@ -24,7 +24,7 @@ trait ConvertibleFromArray
       $property = $reflectionProperty->getName();
       $value = data_get($parameters ?? [], Str::snake($property));
       $default = data_get($defaultProperties, $this->getPropertyName($property, $camelCase));
-      $setter = 'set' . ucfirst($reflectionProperty->getName());
+      $setter = 'set' . Str::studly($reflectionProperty->getName());
 
       if ($class->hasMethod($setter)) {
         $this->$setter($value);
