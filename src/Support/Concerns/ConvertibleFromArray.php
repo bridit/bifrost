@@ -12,19 +12,19 @@ trait ConvertibleFromArray
 
   /**
    * Fill object attributes from given associative array
-   * @param array $parameters
-   * @param bool $camelCase = true
+   * @param null|array $parameters
+   * @param null|bool $camelCase = true
    */
-  protected function fillFromArray(array $parameters = [], bool $camelCase = true)
+  protected function fillFromArray(?array $parameters = [], ?bool $camelCase = true)
   {
     $class = new ReflectionClass(static::class);
     $defaultProperties = $class->getDefaultProperties();
 
     foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty){
       $property = $reflectionProperty->getName();
-      $value = data_get($parameters, Str::snake($property));
+      $value = data_get($parameters ?? [], Str::snake($property));
       $default = data_get($defaultProperties, $this->getPropertyName($property, $camelCase));
-      $setter = 'set' . ucfirst($reflectionProperty->getName());
+      $setter = 'set' . Str::studly($reflectionProperty->getName());
 
       if ($class->hasMethod($setter)) {
         $this->$setter($value);
