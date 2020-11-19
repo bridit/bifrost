@@ -2,28 +2,65 @@
 
 namespace Bifrost\Http;
 
-use Illuminate\Routing\Router;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
+  /**
+   * The application's global HTTP middleware stack.
+   *
+   * These middleware are run during every request to your application.
+   *
+   * @var array
+   */
+  protected $middleware = [
+    // \Bifrost\Http\Middleware\TrustHosts::class,
+    \Bifrost\Http\Middleware\TrustProxies::class,
+    \Bifrost\Http\Middleware\HandleCors::class,
+    \Bifrost\Http\Middleware\PreventRequestsDuringMaintenance::class,
+    \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+    \Bifrost\Http\Middleware\TrimStrings::class,
+    \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+  ];
 
   /**
-   * Create a new HTTP kernel instance.
+   * The application's route middleware groups.
    *
-   * @param  \Illuminate\Contracts\Foundation\Application  $app
-   * @param  \Illuminate\Routing\Router  $router
-   * @return void
+   * @var array
    */
-  public function __construct(Application $app, Router $router)
-  {
-    $bifrostConfig = include realpath(base_path() . '/config/bifrost.php');
+  protected $middlewareGroups = [
+    'web' => [
+      \Bifrost\Http\Middleware\EncryptCookies::class,
+      \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+      \Illuminate\Session\Middleware\StartSession::class,
+      // \Illuminate\Session\Middleware\AuthenticateSession::class,
+      \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+      \Bifrost\Http\Middleware\VerifyCsrfToken::class,
+      \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
 
-    $this->middleware = data_get($bifrostConfig, 'http.kernel.middleware', []);
-    $this->middlewareGroups = data_get($bifrostConfig, 'http.kernel.middlewareGroups', []);
-    $this->routeMiddleware = data_get($bifrostConfig, 'http.kernel.routeMiddleware', []);
+    'api' => [
+      'throttle:api',
+      \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
+  ];
 
-    parent::__construct($app, $router);
-  }
+  /**
+   * The application's route middleware.
+   *
+   * These middleware may be assigned to groups or used individually.
+   *
+   * @var array
+   */
+  protected $routeMiddleware = [
+    'auth' => \Bifrost\Http\Middleware\Authenticate::class,
+    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+    'can' => \Illuminate\Auth\Middleware\Authorize::class,
+    'guest' => \Bifrost\Http\Middleware\RedirectIfAuthenticated::class,
+    'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+    'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+    'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+  ];
 }

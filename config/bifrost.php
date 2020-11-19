@@ -31,7 +31,10 @@ return [
   'http' => [
     'kernel' => \Bifrost\Http\Kernel::class,
     'service_provider' => \Bifrost\Providers\RouteServiceProvider::class,
+    'proxies' => '*',
+    'proxies_headers' => \Illuminate\Http\Request::HEADER_X_FORWARDED_ALL,
     'api' => [
+      'rate_limit' => 60,
 //      'serializer' => \League\Fractal\Serializer\ArraySerializer::class,
 //      'serializer' => \League\Fractal\Serializer\DataArraySerializer::class,
 //      'serializer' => \League\Fractal\Serializer\JsonApiSerializer::class,

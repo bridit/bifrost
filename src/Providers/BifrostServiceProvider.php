@@ -40,7 +40,6 @@ class BifrostServiceProvider extends ServiceProvider
     $this->app->register(Config::get('bifrost.event.service_provider', EventServiceProvider::class));
 //    $this->app->register(Config::get('bifrost.broadcast.service_provider', BroadcastServiceProvider::class));
     $this->app->register(CorsServiceProvider::class);
-    $this->app->register(\Webpatser\Uuid\UuidServiceProvider::class);
 
     if (Config::get('bifrost.http.api.serializer', JsonApiSerializer::class) === JsonApiSerializer::class) {
       $this->app->extend(ValidationFactory::class, function ($service, $app) {

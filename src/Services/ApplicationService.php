@@ -3,7 +3,7 @@
 namespace Bifrost\Services;
 
 use Exception;
-use Bifrost\Entities\Model;
+use Bifrost\Models\Model;
 use Bifrost\DTO\DataTransferObject;
 use Illuminate\Database\Eloquent\Collection;
 use Bifrost\Transformers\ApplicationTransformer;

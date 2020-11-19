@@ -2,7 +2,7 @@
 
 namespace Bifrost\Tasks;
 
-use Bifrost\Entities\Model;
+use Bifrost\Models\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Bridit\Laravel\Tasks\QueueableTask;

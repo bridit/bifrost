@@ -2,7 +2,7 @@
 
 namespace Bifrost\Transformers;
 
-use Bifrost\Entities\Model;
+use Bifrost\Models\Model;
 use Illuminate\Support\Str;
 use Bifrost\DTO\DataTransferObject;
 use Illuminate\Support\Facades\Request;

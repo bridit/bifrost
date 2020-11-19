@@ -31,6 +31,7 @@ class TrustProxies extends Middleware
   public function __construct(Repository $config)
   {
     $this->proxies = Config::get('bifrost.http.proxies');
+    $this->headers = Config::get('bifrost.http.proxies_headers', Request::HEADER_X_FORWARDED_ALL);
 
     parent::__construct($config);
   }
