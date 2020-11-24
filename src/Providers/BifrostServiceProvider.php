@@ -2,6 +2,8 @@
 
 namespace Bifrost\Providers;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 use Illuminate\Support\Facades\Config;
 use League\Fractal\Serializer\JsonApiSerializer;
 use Bifrost\Console\Commands\ProjectPermissionsCommand;
@@ -20,6 +22,7 @@ class BifrostServiceProvider extends ServiceProvider
       __DIR__ . '/../../config/bifrost.php' => base_path('config/bifrost.php'),
     ]);
 
+    $this->strMacros();
     $this->loadModulesAdditional();
   }
 
@@ -77,4 +80,17 @@ class BifrostServiceProvider extends ServiceProvider
     $this->loadTranslationsFrom($basePath . '/Resources/Translations', $module);
   }
 
+  protected function strMacros()
+  {
+    Str::macro('like', fn(?string $subject, string $pattern) => like($subject, $pattern));
+    Str::macro('ilike', fn(?string $subject, string $pattern) => ilike($subject, $pattern));
+
+    Stringable::macro('like', function(string $pattern) {
+      return Str::like($this->value, $pattern);
+    });
+
+    Stringable::macro('ilike', function(string $pattern) {
+      return Str::ilike($this->value, $pattern);
+    });
+  }
 }
