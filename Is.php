@@ -10,7 +10,7 @@ use Illuminate\Support\Traits\Macroable;
  * Class Check
  * @package Core
  */
-class Check
+class Is
 {
   use Macroable;
 
