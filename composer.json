@@ -37,6 +37,9 @@
     "nunomaduro/collision": "^5.0",
     "phpunit/phpunit": "^9.3"
   },
+  "replace": {
+    "bridit/bifrost-support": "^4.0"
+  },
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
