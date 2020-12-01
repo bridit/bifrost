@@ -31,11 +31,11 @@ class BifrostBuilder extends Builder
    */
   public function __construct(ConnectionInterface $connection, Grammar $grammar = null, Processor $processor = null)
   {
-    $this->cacheDriver(Config::get('bifrost.query_cache.driver'))
-      ->cachePrefix(Config::get('bifrost.query_cache.prefix'))
+    $this->cacheDriver(Config::get('bifrost.query_cache.driver', 'redis'))
+      ->cachePrefix(Config::get('bifrost.query_cache.prefix',  'Bifrost'))
       ->clearCacheMode(Config::get('bifrost.query_cache.cache_mode', BifrostCacheModeEnum::CLEAR_CACHE_BY_KEYS))
-      ->cacheFor(Config::get('bifrost.query_cache.time'))
-      ->cacheForFind(Config::get('bifrost.query_cache.time_for_find'));
+      ->cacheFor(Config::get('bifrost.query_cache.time', 30))
+      ->cacheForFind(Config::get('bifrost.query_cache.time_for_find', 300));
 
     parent::__construct($connection, $grammar, $processor);
   }
