@@ -19,7 +19,7 @@
     "ext-json": "*",
     "asm89/stack-cors": "^2.0",
     "bridit/bifrost-database": "^1.2",
-    "bridit/laravel-tasks": "^1.2",
+    "bridit/laravel-tasks": "^2.0",
     "fideloper/proxy": "^4.4",
     "guzzlehttp/guzzle": "^7.0",
     "laravel/framework": "^8.0",
