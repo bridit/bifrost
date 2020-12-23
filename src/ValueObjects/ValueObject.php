@@ -4,8 +4,9 @@ namespace Bifrost\ValueObjects;
 
 use Bifrost\Support\Concerns\Arrayable;
 use Bifrost\Support\Concerns\ConvertibleFromArray;
+use Illuminate\Contracts\Support\Arrayable as ArrayableContract;
 
-class ValueObject
+class ValueObject implements ArrayableContract
 {
 
   use ConvertibleFromArray, Arrayable;
