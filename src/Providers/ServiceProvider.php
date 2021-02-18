@@ -2,6 +2,7 @@
 
 namespace Bifrost\Providers;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
 class ServiceProvider extends IlluminateServiceProvider
@@ -31,7 +32,7 @@ class ServiceProvider extends IlluminateServiceProvider
   /**
    * Create a new service provider instance.
    *
-   * @param  \Illuminate\Contracts\Foundation\Application  $app
+   * @param  Application  $app
    * @return void
    */
   public function __construct($app)

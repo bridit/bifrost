@@ -4,7 +4,10 @@ namespace Bifrost\Providers;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -46,6 +49,8 @@ class RouteServiceProvider extends ServiceProvider
    */
   protected $interfaces;
 
+  protected int $apiRateLimit;
+
   /**
    * Create a new service provider instance.
    *
@@ -56,10 +61,23 @@ class RouteServiceProvider extends ServiceProvider
   {
     parent::__construct($app);
 
-    $this->modules = config('bifrost.modules') ?? [];
+    $this->modules = config('bifrost.modules', []);
     $this->interfaces = config('bifrost.http.interfaces', []);
     $this->modulesNamespace = config('bifrost.namespace', 'App');
+    $this->apiRateLimit = config('bifrost.http.api.rate_limit', 60);
     $this->bundleBasePath = base_path(config('bifrost.bundle_basedir', 'app'));
+  }
+
+  /**
+   * Configure the rate limiters for the application.
+   *
+   * @return void
+   */
+  protected function configureRateLimiting()
+  {
+    RateLimiter::for('api', function (Request $request) {
+      return Limit::perMinute($this->apiRateLimit)->by(optional($request->user())->id ?: $request->ip());
+    });
   }
 
   /**
@@ -69,6 +87,8 @@ class RouteServiceProvider extends ServiceProvider
    */
   public function boot()
   {
+    $this->configureRateLimiting();
+
     Route::macro('fullResource', function ($name, $controller, array $options = []) {
       $name = substr($name, 0, 1) === '/' ? substr($name, 1, strlen($name)) : $name;
       $modelName = array_map(fn($item) => Str::singular($item), explode('-', $name));

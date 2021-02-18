@@ -2,16 +2,14 @@
 
 namespace Bifrost\Http\Api\Controllers;
 
-use Bifrost\Exceptions\JsonApiException;
 use Exception;
-use Bifrost\Entities\Model;
-use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
+use Bifrost\Models\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Bifrost\DTO\DataTransferObject;
 use Illuminate\Support\Facades\Config;
 use Bifrost\Services\ApplicationService;
+use Bifrost\Exceptions\JsonApiException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Bifrost\Transformers\InterfaceTransformer;
 use League\Fractal\Serializer\JsonApiSerializer;

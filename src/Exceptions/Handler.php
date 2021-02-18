@@ -29,19 +29,15 @@ class Handler extends ExceptionHandler
   ];
 
   /**
-   * @inheritDoc
+   * Register the exception handling callbacks for the application.
+   *
+   * @return void
    */
-  public function report(Throwable $exception)
+  public function register()
   {
-    parent::report($exception);
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public function render($request, Throwable $exception)
-  {
-    return parent::render($request, $exception);
+    $this->reportable(function (Throwable $e) {
+      //
+    });
   }
 
   /**

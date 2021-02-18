@@ -15,7 +15,7 @@ class BroadcastServiceProvider extends ServiceProvider
   {
     Broadcast::routes();
 
-    if (blank($this->modules)) {
+    if (blank($this->modules) && is_readable($this->bundleBasePath . '/Interfaces/Http/Broadcast/channels.php')) {
       require_once $this->bundleBasePath . '/Interfaces/Http/Broadcast/channels.php';
       return;
     }
@@ -24,7 +24,9 @@ class BroadcastServiceProvider extends ServiceProvider
 
     foreach ($modulesNames as $moduleName)
     {
-      require_once $this->bundleBasePath . '/' . $moduleName . '/Interfaces/Http/Broadcast/channels.php';
+      if (is_readable($this->bundleBasePath . '/' . $moduleName . '/Interfaces/Http/Broadcast/channels.php')) {
+        require_once $this->bundleBasePath . '/' . $moduleName . '/Interfaces/Http/Broadcast/channels.php';
+      }
     }
   }
 }

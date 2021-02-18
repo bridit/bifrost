@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
    * @var array
    */
   protected $policies = [
-
+    //
   ];
 
   /**
@@ -23,7 +23,7 @@ class AuthServiceProvider extends ServiceProvider
    */
   public function boot()
   {
-    Gate::guessPolicyNamesUsing(fn($modelClass) => str_replace('\\Entities\\', '\\Policies\\', $modelClass) . 'Policy');
+    Gate::guessPolicyNamesUsing(fn($modelClass) => str_replace(['\\Models\\', '\\Entities\\'], '\\Policies\\', $modelClass) . 'Policy');
 
     $this->registerPolicies();
   }

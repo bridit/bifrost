@@ -4,7 +4,7 @@ namespace Bifrost\Services;
 
 use Exception;
 use Carbon\Carbon;
-use Bifrost\Entities\Model;
+use Bifrost\Models\Model;
 
 /**
  * Class DomainService
