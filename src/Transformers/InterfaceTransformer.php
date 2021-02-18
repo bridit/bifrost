@@ -24,4 +24,30 @@ abstract class InterfaceTransformer extends TransformerAbstract
     return Arr::only($attributes, explode(',', $fields));
   }
 
+  protected function item($data, $transformer, $resourceKey = null)
+  {
+    if(blank($data)){
+      return $this->null();
+    }
+
+    return parent::item($data, $transformer, $resourceKey);
+  }
+
+  protected function collection($data, $transformer, $resourceKey = null)
+  {
+    if(blank($data)){
+      return $this->null();
+    }
+
+    return parent::collection($data, $transformer, $resourceKey);
+  }
+
+  protected function primitive($data, $transformer = null, $resourceKey = null)
+  {
+    if(blank($data)){
+      return $this->null();
+    }
+
+    return parent::primitive($data, $transformer, $resourceKey);
+  }
 }
