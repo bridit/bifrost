@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use ReflectionClass;
 use ReflectionProperty;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 
 trait ConvertibleFromArray
 {
@@ -36,6 +37,11 @@ trait ConvertibleFromArray
         continue;
       }
 
+      if ($reflectionProperty->getType()->getName() === 'Illuminate\Support\Collection') {
+        $this->{$this->getPropertyName($property, $camelCase)} = Collection::make($value ?? []);
+        continue;
+      }
+
       if (method_exists($reflectionProperty->getType()->getName(), 'fromArray') && is_array($value)) {
         $this->{$this->getPropertyName($property, $camelCase)} = call_user_func($reflectionProperty->getType()->getName() . '::fromArray', $value);
         continue;
@@ -45,9 +51,14 @@ trait ConvertibleFromArray
     }
   }
 
-  private function getPropertyName(string $property, bool $camelCase)
+  /**
+   * @param string $property
+   * @param bool $camelCase
+   * @return string
+   */
+  private function getPropertyName(string $property, bool $camelCase): string
   {
-      return $camelCase ? Str::camel($property) : Str::snake($property);
+    return $camelCase ? Str::camel($property) : Str::snake($property);
   }
 
 }
