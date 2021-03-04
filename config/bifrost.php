@@ -67,5 +67,16 @@ return [
     */
   'bundle_basedir' => 'app',
   'modules' => [],
+
+  'query_cache' => [
+    'prefix' => 'Bifrost',
+    'driver' => env('QUERY_CACHE_DRIVER', 'redis'),
+    'time' => 30, // 30seg
+    'cache_mode' => \Bifrost\Enums\BifrostCacheModeEnum::CLEAR_CACHE_BY_KEYS,
+    'flush_cache_on_update' => true,
+    'recreate_cache' => true,
+    'time_for_find' => 300 // 5min
+  ],
+
 ];
 
