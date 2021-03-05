@@ -32,17 +32,19 @@ trait ConvertibleFromArray
         continue;
       }
 
-      if ($reflectionProperty->getType()->getName() === 'Carbon\Carbon' && !blank($value ?? $default)) {
+      $attributeType = optional($reflectionProperty->getType())->getName();
+
+      if ($attributeType === 'Carbon\Carbon' && !blank($value ?? $default)) {
         $this->{$this->getPropertyName($property, $camelCase)} = Carbon::parse($value ?? $default);
         continue;
       }
 
-      if ($reflectionProperty->getType()->getName() === 'Illuminate\Support\Collection') {
+      if ($attributeType === 'Illuminate\Support\Collection') {
         $this->{$this->getPropertyName($property, $camelCase)} = Collection::make($value ?? []);
         continue;
       }
 
-      if (method_exists($reflectionProperty->getType()->getName(), 'fromArray') && is_array($value)) {
+      if ($attributeType !== null && method_exists($attributeType, 'fromArray') && is_array($value)) {
         $this->{$this->getPropertyName($property, $camelCase)} = call_user_func($reflectionProperty->getType()->getName() . '::fromArray', $value);
         continue;
       }
