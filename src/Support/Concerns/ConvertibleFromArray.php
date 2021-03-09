@@ -23,7 +23,7 @@ trait ConvertibleFromArray
 
     foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty){
       $property = $reflectionProperty->getName();
-      $value = data_get($parameters ?? [], Str::snake($property));
+      $value = $this->getPropertyValue($parameters ?? [], $property);
       $default = data_get($defaultProperties, $this->getPropertyName($property, $camelCase));
       $setter = 'set' . Str::studly($reflectionProperty->getName());
 
@@ -61,6 +61,35 @@ trait ConvertibleFromArray
   private function getPropertyName(string $property, bool $camelCase): string
   {
     return $camelCase ? Str::camel($property) : Str::snake($property);
+  }
+
+  /**
+   * @param array $parameters
+   * @param string $property
+   * @return mixed
+   */
+  private function getPropertyValue(array $parameters, string $property)
+  {
+    if (array_key_exists($property, $parameters)) {
+      return $parameters[$property];
+    }
+
+    $snakeCaseKey = Str::snake($property);
+    if (array_key_exists($snakeCaseKey, $parameters)) {
+      return $parameters[$snakeCaseKey];
+    }
+
+    $camelCaseKey = Str::camel($property);
+    if (array_key_exists($camelCaseKey, $parameters)) {
+      return $parameters[$camelCaseKey];
+    }
+
+    $slugCaseKey = Str::slug($property);
+    if (array_key_exists($slugCaseKey, $parameters)) {
+      return $parameters[$slugCaseKey];
+    }
+
+    return null;
   }
 
 }
