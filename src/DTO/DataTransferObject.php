@@ -3,9 +3,10 @@
 namespace Bifrost\DTO;
 
 use Illuminate\Http\Request;
+use Bifrost\Support\ValueObjects\ValueObject;
 use Bifrost\Support\Concerns\ConvertibleFromArray;
 
-class DataTransferObject
+class DataTransferObject extends ValueObject
 {
 
   use ConvertibleFromArray;
@@ -17,14 +18,14 @@ class DataTransferObject
 
   /**
    * DataTransferObject constructor.
-   * @param null|array $parameters
-   * @param null|bool $camelCase
+   * @param array $params
+   * @param string $case
    */
-  public function __construct(?array $parameters = [], ?bool $camelCase = true)
+  public function __construct(array $params = [], string $case = 'camel')
   {
-    $this->fillFromArray($parameters, $camelCase);
+    parent::__construct($params, $case);
 
-    $this->requestData = $parameters;
+    $this->requestData = $params;
   }
 
   /**
@@ -38,22 +39,12 @@ class DataTransferObject
 
   /**
    * @param Request $request
-   * @param bool $camelCase
+   * @param string $case
    * @return static
    */
-  public static function fromRequest(Request $request, bool $camelCase = true): self
+  public static function fromRequest(Request $request, string $case = 'camel'): self
   {
-    return new static($request->all(), $camelCase);
-  }
-
-  /**
-   * @param array $params
-   * @param bool $camelCase
-   * @return static
-   */
-  public static function fromArray(array $params, bool $camelCase = true): self
-  {
-    return new static($params, $camelCase);
+    return new static($request->all(), $case);
   }
 
 }
