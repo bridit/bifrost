@@ -10,7 +10,7 @@ use Bifrost\Repositories\EntityRepositoryContract;
  * Class BaseModel
  * @package Bifrost\Models
  */
-class BaseModel extends \Bifrost\Database\Eloquent\Model
+class BaseModel extends \Bifrost\Database\Eloquent\Model implements IModel
 {
 
   /**

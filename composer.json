@@ -15,30 +15,28 @@
     }
   ],
   "require": {
-    "php": "^7.4|^8.0",
+    "php": "^8.0",
     "ext-json": "*",
     "asm89/stack-cors": "^2.0",
-    "bridit/bifrost-database": "^1.2",
-    "bridit/laravel-tasks": "^2.0",
+    "bridit/bifrost-database": "^2.0",
+    "bridit/laravel-tasks": "^2.1",
     "fideloper/proxy": "^4.4",
     "guzzlehttp/guzzle": "^7.0",
     "laravel/framework": "^8.0",
     "ramsey/uuid": "^4.1",
     "spatie/laravel-fractal": "^5.8",
     "spatie/laravel-query-builder": "^3.3",
-    "spatie/laravel-responsecache": "^6.6",
-    "spatie/laravel-schemaless-attributes": "^1.8"
+    "spatie/laravel-responsecache": "^7.0",
+    "spatie/laravel-schemaless-attributes": "^2.0"
   },
   "require-dev": {
-    "facade/ignition": "^2.5",
-    "fzaninotto/faker": "^1.9",
-    "laravel/tinker": "^2.5",
+    "facade/ignition": "^2.8",
+    "laravel/tinker": "^2.6",
     "mockery/mockery": "^1.4",
-    "nunomaduro/collision": "^5.0",
-    "phpunit/phpunit": "^9.3"
+    "phpunit/phpunit": "^9.5"
   },
   "replace": {
-    "bridit/bifrost-support": "^4.0"
+    "bridit/bifrost-support": "^5.0"
   },
   "config": {
     "optimize-autoloader": true,
