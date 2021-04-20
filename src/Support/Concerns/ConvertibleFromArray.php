@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use ReflectionClass;
 use ReflectionProperty;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 trait ConvertibleFromArray
@@ -13,18 +14,18 @@ trait ConvertibleFromArray
 
   /**
    * Fill object attributes from given associative array
-   * @param null|array $parameters
-   * @param null|bool $camelCase = true
+   * @param array $parameters
+   * @param string|null $case
    */
-  protected function fillFromArray(?array $parameters = [], ?bool $camelCase = true)
+  protected function fillFromArray(array $parameters = [], string $case = null)
   {
     $class = new ReflectionClass(static::class);
     $defaultProperties = $class->getDefaultProperties();
 
-    foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty){
-      $property = $reflectionProperty->getName();
-      $value = $this->getPropertyValue($parameters ?? [], $property);
-      $default = data_get($defaultProperties, $this->getPropertyName($property, $camelCase));
+    foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty) {
+      $property = $this->getPropertyName($reflectionProperty->getName(), $case);
+      $value = $this->getPropertyValue($parameters, $property);
+      $default = Arr::get($defaultProperties, $property);
       $setter = 'set' . Str::studly($reflectionProperty->getName());
 
       if ($class->hasMethod($setter)) {
@@ -35,32 +36,38 @@ trait ConvertibleFromArray
       $attributeType = optional($reflectionProperty->getType())->getName();
 
       if ($attributeType === 'Carbon\Carbon' && !blank($value ?? $default)) {
-        $this->{$this->getPropertyName($property, $camelCase)} = Carbon::parse($value ?? $default);
+        $this->{$property} = Carbon::parse($value ?? $default);
         continue;
       }
 
       if ($attributeType === 'Illuminate\Support\Collection') {
-        $this->{$this->getPropertyName($property, $camelCase)} = Collection::make($value ?? []);
+        $this->{$property} = Collection::make($value ?? []);
         continue;
       }
 
-      if ($attributeType !== null && method_exists($attributeType, 'fromArray') && is_array($value)) {
-        $this->{$this->getPropertyName($property, $camelCase)} = call_user_func($reflectionProperty->getType()->getName() . '::fromArray', $value);
+      if (is_array($value) && $attributeType !== null && method_exists($attributeType, 'fromArray')) {
+        $this->{$property} = call_user_func_array($reflectionProperty->getType()->getName() . '::fromArray', [$value, $case]);
         continue;
       }
 
-      $this->{$this->getPropertyName($property, $camelCase)} = $value ?? $default;
+      $this->{$property} = $value ?? $default;
     }
   }
 
   /**
    * @param string $property
-   * @param bool $camelCase
+   * @param string|null $case
    * @return string
    */
-  private function getPropertyName(string $property, bool $camelCase): string
+  private function getPropertyName(string $property, string $case = null): string
   {
-    return $camelCase ? Str::camel($property) : Str::snake($property);
+    return match ($case) {
+      'snake' => Str::snake($property),
+      'camel' => Str::camel($property),
+      'slug', 'kebab' => Str::kebab($property),
+      'studly' => Str::studly($property),
+      default => $property,
+    };
   }
 
   /**
@@ -68,7 +75,7 @@ trait ConvertibleFromArray
    * @param string $property
    * @return mixed
    */
-  private function getPropertyValue(array $parameters, string $property)
+  private function getPropertyValue(array $parameters, string $property): mixed
   {
     if (array_key_exists($property, $parameters)) {
       return $parameters[$property];
@@ -84,9 +91,14 @@ trait ConvertibleFromArray
       return $parameters[$camelCaseKey];
     }
 
-    $slugCaseKey = Str::slug($property);
-    if (array_key_exists($slugCaseKey, $parameters)) {
-      return $parameters[$slugCaseKey];
+    $kebabCaseKey = Str::kebab($property);
+    if (array_key_exists($kebabCaseKey, $parameters)) {
+      return $parameters[$kebabCaseKey];
+    }
+
+    $studlyCaseKey = Str::studly($property);
+    if (array_key_exists($studlyCaseKey, $parameters)) {
+      return $parameters[$studlyCaseKey];
     }
 
     return null;

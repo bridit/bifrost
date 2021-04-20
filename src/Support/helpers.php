@@ -30,7 +30,7 @@ if (!function_exists('like')) {
   {
     $pattern = str_replace('%', '.*', preg_quote($pattern, '/'));
 
-    return (bool) preg_match("/^{$pattern}$/", $subject);
+    return (bool)preg_match("/^{$pattern}$/", $subject);
   }
 
 }
@@ -48,7 +48,7 @@ if (!function_exists('ilike')) {
   {
     $pattern = str_replace('%', '.*', preg_quote($pattern, '/'));
 
-    return (bool) preg_match("/^{$pattern}$/i", $subject);
+    return (bool)preg_match("/^{$pattern}$/i", $subject);
   }
 
 }
