@@ -3,13 +3,9 @@
 namespace Bifrost\DTO;
 
 use Illuminate\Http\Request;
-use Bifrost\Support\ValueObjects\ValueObject;
-use Bifrost\Support\Concerns\ConvertibleFromArray;
 
-class DataTransferObject extends ValueObject
+class DataTransferObject extends \Bifrost\Support\DTO\DataTransferObject
 {
-
-  use ConvertibleFromArray;
 
   /**
    * @var array|null
@@ -18,14 +14,13 @@ class DataTransferObject extends ValueObject
 
   /**
    * DataTransferObject constructor.
-   * @param array $params
-   * @param string $case
+   * @param ...$args
    */
-  public function __construct(array $params = [], string $case = 'camel')
+  public function __construct(...$args)
   {
-    parent::__construct($params, $case);
+    parent::__construct($args);
 
-    $this->requestData = $params;
+    $this->requestData = $args;
   }
 
   /**
@@ -39,12 +34,11 @@ class DataTransferObject extends ValueObject
 
   /**
    * @param Request $request
-   * @param string $case
    * @return static
    */
-  public static function fromRequest(Request $request, string $case = 'camel'): self
+  public static function fromRequest(Request $request): static
   {
-    return new static($request->all(), $case);
+    return new static($request->all());
   }
 
 }

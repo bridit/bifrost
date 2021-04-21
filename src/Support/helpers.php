@@ -1,5 +1,11 @@
 <?php
 
+use Carbon\Carbon;
+use ReflectionClass;
+use ReflectionProperty;
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+
 if (!function_exists('call_if')) {
 
   /**
@@ -49,6 +55,90 @@ if (!function_exists('ilike')) {
     $pattern = str_replace('%', '.*', preg_quote($pattern, '/'));
 
     return (bool)preg_match("/^{$pattern}$/i", $subject);
+  }
+
+}
+
+if (!function_exists('object_fill')) {
+
+  /**
+   * @param object $obj
+   * @param array $parameters
+   * @return void
+   */
+  function object_fill(object &$obj, array $parameters = []): void
+  {
+
+    $class = new ReflectionClass($obj);
+    $defaultProperties = $class->getDefaultProperties();
+
+    foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property)
+    {
+      $name = $property->getName();
+
+      $value =
+        $parameters[$name] ??
+        $obj->{$name} ??
+        $defaultProperties[$name] ??
+        null;
+
+      $setter = 'set' . Str::studly($property->getName());
+
+      if ($class->hasMethod($setter)) {
+        $obj->$setter($value);
+        continue;
+      }
+
+      $attributeType = $property->getType()?->getName();
+
+      if ($attributeType === 'Carbon\Carbon' && !blank($value)) {
+        $obj->{$name} = Carbon::parse($value);
+        continue;
+      }
+
+      if ($attributeType === 'Illuminate\Support\Collection') {
+        $obj->{$name} = Collection::make($value ?? []);
+        continue;
+      }
+
+      if (is_array($value ?? []) && class_exists($attributeType) && method_exists($attributeType, 'fromArray')) {
+        $obj->{$name} = $attributeType::fromArray($value ?? []);
+        continue;
+      }
+
+      $obj->{$name} = $value;
+    }
+
+  }
+
+}
+
+if (!function_exists('array_convert_key_case')) {
+
+  /**
+   * @param array $array
+   * @param callable|string $callback
+   * @param bool $recursive
+   * @return array
+   */
+  function array_convert_key_case(array $array, callable|string $callback, bool $recursive = false): array
+  {
+    if (is_string($callback)) {
+      $callback = fn($key) => Str::$callback($key);
+    }
+
+    if (false === $recursive) {
+      return array_combine(array_map($callback, array_keys($array)), array_values($array));
+    }
+
+    $result = [];
+
+    foreach ($array as $key => $value)
+    {
+      $result[$callback($key)] = is_array($value) ? array_convert_key_case($value, $callback, $recursive) : $value;
+    }
+
+    return $result;
   }
 
 }
