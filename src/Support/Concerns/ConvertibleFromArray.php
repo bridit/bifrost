@@ -45,8 +45,8 @@ trait ConvertibleFromArray
         continue;
       }
 
-      if (is_array($value) && $attributeType !== null && method_exists($attributeType, 'fromArray')) {
-        $this->{$property} = call_user_func_array($reflectionProperty->getType()->getName() . '::fromArray', [$value, $case]);
+      if ((null === $value || is_array($value)) && $attributeType !== null && method_exists($attributeType, 'fromArray')) {
+        $this->{$property} = call_user_func_array($reflectionProperty->getType()->getName() . '::fromArray', [$value ?? [], $case]);
         continue;
       }
 
