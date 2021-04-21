@@ -2,13 +2,12 @@
 
 namespace Bifrost\Support\Concerns;
 
-use Bifrost\Support\Concerns\Contracts\Arrayable as ArrayableContract;
 use Illuminate\Support\Collection;
+use Bifrost\Support\Concerns\Contracts\Arrayable as ArrayableContract;
+use Illuminate\Contracts\Support\Arrayable as IlluminateArrayableContract;
 
 trait Arrayable
 {
-
-
 
   /**
    * Get the instance as an array.
@@ -23,7 +22,17 @@ trait Arrayable
       ? get_object_vars($this)
       : array_convert_key_case(get_object_vars($this), $case, true);
 
-    $array = array_map(fn($item) => $item instanceof ArrayableContract ? $item->toArray($case, $preserveEmpty) : $item, $attributes);
+    $array = array_map(function($item) use ($case, $preserveEmpty) {
+      if ($item instanceof ArrayableContract) {
+        return $item->toArray($case, $preserveEmpty);
+      }
+
+      if ($item instanceof IlluminateArrayableContract) {
+        return $item->toArray();
+      }
+
+      return $item;
+    }, $attributes);
 
     return true === $preserveEmpty
       ? $array
