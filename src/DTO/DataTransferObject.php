@@ -18,6 +18,10 @@ class DataTransferObject extends \Bifrost\Support\DTO\DataTransferObject
    */
   public function __construct(...$args)
   {
+    if (is_array($args[0] ?? null)) {
+      $args = $args[0];
+    }
+
     parent::__construct($args);
 
     $this->requestData = $args;
