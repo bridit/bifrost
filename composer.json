@@ -36,7 +36,7 @@
     "phpunit/phpunit": "^9.5"
   },
   "replace": {
-    "bridit/bifrost-support": "self.version"
+    "bridit/bifrost-support": "^5.1"
   },
   "config": {
     "optimize-autoloader": true,
