@@ -30,7 +30,9 @@ abstract class ApplicationTransformer
    */
   protected function setAttributeFromDTO(IModel &$model, DataTransferObject $dto, string $property): void
   {
-    $model->{Str::snake($property)} = $dto->{$property};
+    if ($property !== 'requestData') {
+      $model->{Str::snake($property)} = $dto->{$property};
+    }
   }
 
   /**
