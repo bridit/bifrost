@@ -100,6 +100,7 @@ if (!function_exists('object_fill')) {
       }
 
       if (is_array($value ?? []) && class_exists($attributeType) && method_exists($attributeType, 'fromArray')) {
+        $value = null !== $value ? array_convert_key_case($value, 'camel', false) : null;
         $obj->{$name} = $attributeType::fromArray($value ?? []);
         continue;
       }

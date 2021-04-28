@@ -21,7 +21,7 @@ class DataObject implements ArrayableContract
       $args = $args[0];
     }
 
-    $args = array_convert_key_case($args, 'camel', true);
+    $args = array_convert_key_case($args, 'camel', false);
 
     $reflectionClass = new ReflectionClass($this);
     $classProperties = array_map(fn($property) => $property->name, $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC));
