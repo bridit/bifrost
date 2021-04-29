@@ -3,13 +3,11 @@
 namespace Bifrost\Http\Api\JsonApi\Error;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Bifrost\Support\Concerns\NotEmptyArrayable;
-use Bifrost\Support\Concerns\HasMagicAttributes;
 
 class Source implements Arrayable
 {
 
-  use HasMagicAttributes, NotEmptyArrayable;
+  use \Bifrost\Support\Concerns\Arrayable;
 
   /**
    * A JSON Pointer [RFC6901] to the associated entity in the request document

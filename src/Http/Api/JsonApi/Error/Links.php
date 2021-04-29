@@ -2,11 +2,9 @@
 
 namespace Bifrost\Http\Api\JsonApi\Error;
 
-use Bifrost\Support\Concerns\NotEmptyArrayable;
-
 class Links
 {
-  use NotEmptyArrayable;
+  use \Bifrost\Support\Concerns\Arrayable;
 
   /**
    * A link that leads to further details about this particular occurrence of
