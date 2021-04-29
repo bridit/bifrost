@@ -164,7 +164,7 @@ class Response
    */
   public function json(): JsonResponse
   {
-    $errors = array_map(fn($error) => $error->toArray(), $this->getErrors());
+    $errors = array_map(fn($error) => $error->toArray('snake', false), $this->getErrors());
 
     return new JsonResponse(['errors' => $errors], $this->getStatus(), $this->getHeaders(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
   }

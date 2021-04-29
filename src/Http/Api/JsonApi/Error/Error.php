@@ -4,11 +4,10 @@ namespace Bifrost\Http\Api\JsonApi\Error;
 
 use Throwable;
 use Illuminate\Contracts\Support\Arrayable;
-use Bifrost\Support\Concerns\NotEmptyArrayable;
 
 class Error implements Arrayable
 {
-  use NotEmptyArrayable;
+  use \Bifrost\Support\Concerns\Arrayable;
 
   /**
    * A unique identifier for this particular occurrence of the problem.
