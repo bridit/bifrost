@@ -89,8 +89,10 @@ if (!function_exists('object_fill')) {
 
       $attributeType = $property->getType()?->getName();
 
-      if ($attributeType === 'Carbon\Carbon' && !blank($value)) {
-        $obj->{$name} = Carbon::parse($value)->setTimezone(\Illuminate\Support\Facades\Config::get('app.timezone'));
+      if ($attributeType === 'Carbon\Carbon') {
+        $obj->{$name} = !blank($value)
+          ? Carbon::parse($value)->setTimezone(\Illuminate\Support\Facades\Config::get('app.timezone'))
+          : null;
         continue;
       }
 
