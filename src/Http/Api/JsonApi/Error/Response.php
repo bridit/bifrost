@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class Response
 {
@@ -77,10 +77,22 @@ class Response
 
   public static function createFromException(Throwable $exception, array $headers = []): self
   {
-    if (Config::get('app.debug') === false) {
-      $detail = $exception instanceof HttpExceptionInterface ? $exception->getMessage() : 'Server Error';
+    $debug = Config::get('app.debug', false);
+    $code = static::getExceptionCode($exception);
+    $statusCode = static::getHttpStatus($exception, $code);
+    $detail = $debug === true
+      ? $exception->getMessage()
+      : HttpFoundationResponse::$statusTexts[$statusCode] ?? HttpFoundationResponse::$statusTexts[500];
 
-      return new self([Error::create($detail, static::getExceptionCode($exception))], $headers);
+    if ($code === $statusCode) {
+      $code = null;
+    }
+
+    $error = Error::create($detail, $code)
+      ->setStatus($statusCode);
+
+    if ($debug === false) {
+      return new self([$error], $headers);
     }
 
     $source = new Source();
@@ -88,19 +100,29 @@ class Response
     $source->line = $exception->getLine();
     $source->trace = Collection::make($exception->getTrace())->map(fn($trace) => Arr::except($trace, ['args']))->all();
 
-    $error = Error::create($exception->getMessage(), static::getExceptionCode($exception))
-      ->setStatus($exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 500)
+    $error
       ->setTitle(get_class($exception))
       ->setSource($source);
 
     return new self([$error], $headers);
   }
 
-  protected static function getExceptionCode(Throwable $exception)
+  protected static function getExceptionCode(Throwable $exception): ?string
   {
     return !blank($exception->getCode()) && $exception->getCode() !== 0
       ? (string) $exception->getCode()
       : null;
+  }
+
+  protected static function getHttpStatus(Throwable $exception, ?string $code): string
+  {
+    if (method_exists($exception, 'getStatusCode')) {
+      return (string) $exception->getStatusCode();
+    }
+
+    return is_numeric($code) && $code >= 100 && $code <= 599
+      ? (string) $code
+      : '500';
   }
 
   /**
