@@ -90,35 +90,43 @@ class RouteServiceProvider extends ServiceProvider
     $this->configureRateLimiting();
 
     Route::macro('fullResource', function ($name, $controller, array $options = []) {
+      $prefix = data_get($this->getGroupStack(), '0.prefix') ?? data_get($this->getGroupStack(), '1.prefix') ?? '';
+      $prefix = substr($prefix, 0, 1) === '/' ? substr($prefix, 1, strlen($prefix)) : $prefix;
       $name = substr($name, 0, 1) === '/' ? substr($name, 1, strlen($name)) : $name;
       $modelName = array_map(fn($item) => Str::singular($item), explode('-', $name));
       $modelName = Str::camel(implode('_', $modelName));
 
       Arr::set($options, "parameters.$name", $modelName);
 
-      Route::get('/' . $name . '/trashed', $controller . '@trashed')->name($name . '.trashed');
-      Route::put('/' . $name . '/{' . $modelName . '}/trash', $controller . '@trash')->name($name . '.trash');
-      Route::put('/' . $name . '/trash', $controller . '@trashMultiple')->name($name . '.trashMultiple');
-      Route::put('/' . $name . '/{' . $modelName . '}/untrash', $controller . '@untrash')->name($name . '.untrash');
-      Route::put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name($name . '.untrashMultiple');
-      Route::delete('/' . $name, $controller . '@destroyMultiple')->name($name . '.destroyMultiple');
-      Route::resource('/' . $name, $controller, $options);
+      $this->get('/' . $name . '/trashed', $controller . '@trashed')->name("$prefix.$name.trashed");
+      $this->put('/' . $name . '/{' . $modelName . '}/trash', $controller . '@trash')->name("$prefix.$name.trash");
+      $this->put('/' . $name . '/trash', $controller . '@trashMultiple')->name("$prefix.$name.trashMultiple");
+      $this->put('/' . $name . '/{' . $modelName . '}/untrash', $controller . '@untrash')->name("$prefix.$name.untrash");
+      $this->put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name("$prefix.$name.untrashMultiple");
+      $this->delete('/' . $name, $controller . '@destroyMultiple')->name("$prefix.$name.destroyMultiple");
+      $this->resource('/' . $name, $controller, $options);
     });
 
     Route::macro('fullApiResource', function ($name, $controller, array $options = []) {
+      $prefix = data_get($this->getGroupStack(), '0.prefix') ?? data_get($this->getGroupStack(), '1.prefix') ?? '';
+      $prefix = substr($prefix, 0, 1) === '/' ? substr($prefix, 1, strlen($prefix)) : $prefix;
       $name = substr($name, 0, 1) === '/' ? substr($name, 1, strlen($name)) : $name;
       $modelName = array_map(fn($item) => Str::singular($item), explode('-', $name));
       $modelName = Str::camel(implode('_', $modelName));
 
       Arr::set($options, "parameters.$name", $modelName);
 
-      Route::get('/' . $name . '/trashed', $controller . '@trashed')->name($name . '.trashed');
-      Route::put('/' . $name . '/{' . $modelName . '}/trash', $controller . '@trash')->name($name . '.trash');
-      Route::put('/' . $name . '/trash', $controller . '@trashMultiple')->name($name . '.trashMultiple');
-      Route::put('/' . $name . '/{' . $modelName . '}/untrash', $controller . '@untrash')->name($name . '.untrash');
-      Route::put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name($name . '.untrashMultiple');
-      Route::delete('/' . $name, $controller . '@destroyMultiple')->name($name . '.destroyMultiple');
-      Route::apiResource('/' . $name, $controller, $options);
+      $this->get('/' . $name . '/trashed', $controller . '@trashed')->name("$prefix.$name.trashed");
+      $this->put('/' . $name . '/{' . $modelName . '}/trash', $controller . '@trash')->name("$prefix.$name.trash");
+      $this->put('/' . $name . '/trash', $controller . '@trashMultiple')->name("$prefix.$name.trashMultiple");
+      $this->put('/' . $name . '/{' . $modelName . '}/untrash', $controller . '@untrash')->name("$prefix.$name.untrash");
+      $this->put('/' . $name . '/untrash', $controller . '@untrashMultiple')->name("$prefix.$name.untrashMultiple");
+      $this->delete('/' . $name, $controller . '@destroyMultiple')->name("$prefix.$name.destroyMultiple");
+      $this->match(['get', 'head'], $name, $controller . '@index')->name("$prefix.$name.index");
+      $this->post($name, $controller . '@store')->name("$prefix.$name.store");
+      $this->match(['get', 'head'],"/$name/{" . $modelName . '}', $controller . '@show')->name("$prefix.$name.show");
+      $this->match(['put', 'patch'],"/$name/{" . $modelName . '}', $controller . '@update')->name("$prefix.$name.update");
+      $this->match(['delete'],"/$name/{" . $modelName . '}', $controller . '@destroy')->name("$prefix.$name.destroy");
     });
 
     parent::boot();
