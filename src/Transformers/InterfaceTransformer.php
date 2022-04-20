@@ -8,6 +8,8 @@ use League\Fractal\Resource\Primitive;
 use League\Fractal\Resource\Collection;
 use League\Fractal\TransformerAbstract;
 use League\Fractal\Resource\NullResource;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 abstract class InterfaceTransformer extends TransformerAbstract
 {
@@ -17,6 +19,8 @@ abstract class InterfaceTransformer extends TransformerAbstract
    * @param array $attributes
    * @param array|null $allowed
    * @return array
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
    */
   protected function filter(string $entityName, array $attributes = [], ?array $allowed = null): array
   {
@@ -37,22 +41,22 @@ abstract class InterfaceTransformer extends TransformerAbstract
 
   /**
    * @param mixed $data
-   * @param callable|\League\Fractal\TransformerAbstract $transformer
+   * @param callable|TransformerAbstract $transformer
    * @param null $resourceKey
-   * @return \League\Fractal\Resource\NullResource|\League\Fractal\Resource\Item
+   * @return NullResource|Item
    */
-  protected function item($data, $transformer, $resourceKey = null): NullResource|Item
+  protected function itemResource($data, $transformer, $resourceKey = null): NullResource|Item
   {
     return blank($data) ? parent::null() : parent::item($data, $transformer, $resourceKey);
   }
 
   /**
    * @param mixed $data
-   * @param callable|\League\Fractal\TransformerAbstract $transformer
+   * @param callable|TransformerAbstract $transformer
    * @param null $resourceKey
-   * @return \League\Fractal\Resource\NullResource|\League\Fractal\Resource\Collection
+   * @return NullResource|Collection
    */
-  protected function collection($data, $transformer, $resourceKey = null): NullResource|Collection
+  protected function collectionResource($data, $transformer, $resourceKey = null): NullResource|Collection
   {
     return blank($data) ? parent::null() : parent::collection($data, $transformer, $resourceKey);
   }
@@ -61,9 +65,9 @@ abstract class InterfaceTransformer extends TransformerAbstract
    * @param mixed $data
    * @param null $transformer
    * @param null $resourceKey
-   * @return \League\Fractal\Resource\NullResource|\League\Fractal\Resource\Primitive
+   * @return NullResource|Primitive
    */
-  protected function primitive($data, $transformer = null, $resourceKey = null): NullResource|Primitive
+  protected function primitiveResource($data, $transformer = null, $resourceKey = null): NullResource|Primitive
   {
     return blank($data) ? parent::null() : parent::primitive($data, $transformer, $resourceKey);
   }
